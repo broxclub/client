@@ -103,7 +103,12 @@ stockClient.connect().then(() => {
     });
   };
   
-  const stockTable = new StockLib.Table(tabHolder, stockClient, currentType, columns, sortFunc);
+  const subscriptionProps = {
+    TQOB: ['SU26232RMFS7'],
+    TQBR: ['QIWI', 'AFKS']
+  };
+  
+  const stockTable = new StockLib.Table(tabHolder, stockClient, subscriptionProps, columns, sortFunc);
   stockTable.onHeaderCellClick((e) => {
     // Click on column header event handler    
   });
