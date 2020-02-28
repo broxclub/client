@@ -10,6 +10,9 @@
   "bugs": {
     "url": "https://github.com/broxclub/client/issues"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/",
+  },
   "homepage": "https://github.com/broxclub/client#readme",
   "author": "Denis Kozik",
   "license": "ISC"
