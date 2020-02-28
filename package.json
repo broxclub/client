@@ -1,0 +1,16 @@
+{
+  "name": "broxclub-jslib",
+  "version": "1.0.0",
+  "description": "Broxclub javascript client library",
+  "main": "stocklib.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/broxclub/client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/broxclub/client/issues"
+  },
+  "homepage": "https://github.com/broxclub/client#readme",
+  "author": "Denis Kozik",
+  "license": "ISC"
+}

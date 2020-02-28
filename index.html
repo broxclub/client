@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="http://194.67.91.14/stocklib.js"></script>
+  <style>
+    .stock-table {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stock-table-header {
+      display: flex;
+    }
+
+    .stock-table-header-cell {
+      display: flex;
+      border: 1px solid #eee8;
+      padding: 4px;
+    }
+
+    .stock-table-row {
+      display: flex;
+    }
+
+    .stock-table-row-cell {
+      display: flex;
+      border: 1px solid #eee8;
+      padding: 4px;
+      white-space: normal;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+<div id="tabHolder"></div>
+
+<script>
+
+  const tabHolder = document.getElementById('tabHolder');
+
+  const queryTypes = [
+    {TQOB: ['SU26232RMFS7'], TQBR: ['QIWI', 'AFKS']},
+    // { TQOB: ['SU26232RMFS7'] },
+    // { TQBR: ['AFKS'] },
+  ];
+
+  const currentType = queryTypes[Math.floor(Math.random() * queryTypes.length)];
+
+  StockLib.run().then(() => {
+    const stockClient = new StockLib.Client('194.67.91.14:1313');
+
+    stockClient.connect().then(() => {
+
+      /*stockClient.listFields().then((response) => {
+      // console.log(response);
+      }).catch(e => console.error(e));*/
+
+      /*stockClient.listSecurities({
+        // fields: ['BOARDID', 'SECID', 'ISIN', 'SECNAME'],
+        filter: 'SU26232RMFS7'
+      }).then(response => {
+        console.log(response);
+      }).catch(e => console.error(e));*/
+
+      const columns = [
+        // {
+        //  id: 'SECID', // ID for each column
+        //  key?: true, // key - does column type is key (must be at least one key! for to collect rows to map)
+        //  caption?: 'Column caption', // Column header text
+        //  className?: 'column-css-class', // Column class name
+        //  style?: { width: '100px' }, // Header/row cell runtime styles
+        //  hidden?: false, // does column hidden? may be hidden column with key definition
+        //  renderCell?: () => {}, // cell render callback (using if defined)
+        //  renderHeaderCell?: () => {} // header cell render callback (using if defined)
+        // }
+        {id: 'SECID', key: true, caption: 'Security', className: 'security', style: {width: '170px'}},
+        {id: 'SHORTNAME', caption: 'Short name', className: 'shortname', style: {width: '100px'}},
+        {id: 'SECNAME', caption: 'Security name', className: 'secname', style: {width: '200px'}},
+        {id: 'OPEN', caption: 'Open', style: {width: '200px'}},
+        {id: 'HIGH', caption: 'High', style: {width: '200px'}},
+        {id: 'LOW', caption: 'Low', style: {width: '200px'}},
+        {id: 'VALUE', caption: 'Value', style: {width: '200px'}},
+        {id: 'BOARDID', key: true, hidden: true}
+      ];
+
+      // String sort function
+      const sortFunc = (rows) => {
+        return rows.sort((a, b) => {
+          return a.SECID > b.SECID ? 1 : a.SECID < b.SECID ? -1 : 0;
+        });
+      };
+
+      const stockTable = new StockLib.Table(tabHolder, stockClient, currentType, columns, sortFunc);
+      stockTable.onHeaderCellClick((e) => {
+        console.log('[[onHeaderCellClick]]', e);
+      });
+
+      stockTable.onCellClick((e) => {
+        console.log('[[onCellClick]]', e);
+      });
+    });
+
+  });
+
+</script>
+</body>
+</html>
