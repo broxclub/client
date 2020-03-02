@@ -1,4 +1,9 @@
 const StockLib = (() => {
+  const isSsl = location.protocol.indexOf('https') === 0;
+
+  function rtrim(x) {
+    return x.replace(/\W+$/, '');
+  }
 
   const StockClient = (() => {
     const nextCommandId = (() => {
@@ -20,7 +25,21 @@ const StockLib = (() => {
 
     function StockClient(url) {
       let ws;
+      let useSsl = false;
+      if (url.indexOf('http') === 0) {
+        if (url.indexOf('https') === 0) {
+          useSsl = true;
+        }
+        url = url.replace(/^https?\:/, '');
+      }
+      const wsUrl = `ws${useSsl ? 's':''}://${url}`;
+      const apiUrl = rtrim(`http${useSsl ? 's':''}://${url}`);
+
       const channels = new Map();
+
+      const apiRequest = (url, params) => {
+        return getRequest(`${apiUrl}${url}`, params);
+      };
 
       const wsSend = (commandId, command, props) => {
         ws.send(JSON.stringify(props ? [commandId, command, props] : [commandId, command]));
@@ -36,7 +55,7 @@ const StockLib = (() => {
 
       this.connect = () => {
         return new Promise((resolve, reject) => {
-          ws = new WebSocket(`ws://${url}/marketdata`);
+          ws = new WebSocket(`${wsUrl}/marketdata`);
           ws.onopen = (e) => {
             resolve();
             setInterval(() => {
@@ -87,7 +106,7 @@ const StockLib = (() => {
 
       this.listFields = () => {
         return new Promise((resolve, reject) => {
-          getRequest(`//${url}/fields`).then((response) => {
+          apiRequest(`/stock/fields`).then((response) => {
             resolve(response);
           }).catch(reject);
         });
@@ -98,15 +117,24 @@ const StockLib = (() => {
         Array.isArray(fields) && fields.length && props.push(`fields=${fields.join(',')}`);
         filter > '' && typeof filter === 'string' && props.push(`filter=${filter}`);
         return new Promise((resolve, reject) => {
-          getRequest(`//${url}/securities`, props).then(response => {
+          apiRequest(`/stock/securities`, props).then(response => {
             resolve(response);
           }).catch(reject);
         });
-      }
+      };
+
+      this.listPortfolios = (portfolioId) => {
+        return new Promise((resolve, reject) => {
+          apiRequest(`/store/portfolio${portfolioId ? `/${portfolioId}` : ''}`).then(response => {
+            resolve(response);
+          }).catch(reject);
+        });
+      };
     }
 
     return StockClient;
   })();
+
   const StockTable = (() => {
 
     let invocationId;
