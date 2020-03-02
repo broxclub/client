@@ -1,6 +1,6 @@
 {
   "name": "broxclub-jslib",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Broxclub javascript client library",
   "main": "stocklib.js",
   "repository": {
