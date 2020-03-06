@@ -35,9 +35,110 @@
 <body>
 
 <div id="tabHolder"></div>
+<div id="tabHolder1"></div>
 
 <script>
-  const tabHolder = document.getElementById('tabHolder');
+
+  function RowsBuffer(columnsDefinition) {
+    const rows = new Map();
+    const ids = columnsDefinition.filter(col => col.key).map(col => col.id);
+    const getKey = eval(`r => [r.${ids.join(', r.')}].join('-')`);
+
+    return {
+      getKey,
+      get: (key) => {
+        return rows.get(key);
+      },
+      update: (key, row) => {
+        rows.set(key, row);
+      },
+      asArray: () => {
+        return Array.from(rows.values());
+      }
+    }
+  }
+
+  function TableSubscription(stockClient, tabHolder, columns) {
+    // String sort function
+    const sortFunc = (rows) => {
+      return rows.sort((a, b) => {
+        return a.SECID > b.SECID ? 1 : a.SECID < b.SECID ? -1 : 0;
+      });
+    };
+
+    const stockTable = new StockLib.Table(tabHolder, columns, sortFunc);
+    stockTable.onHeaderCellClick((e) => {
+      console.log('[[onHeaderCellClick]]', e);
+    });
+
+    stockTable.onCellClick((e) => {
+      console.log('[[onCellClick]]', e);
+    });
+
+    stockClient.listPortfolios(1).then(securities => {
+      const rowsBuffer = new RowsBuffer(columns);
+      const subscription = {};
+      for (const sec of securities) {
+        const {
+          board: boardid, secid, create_at, type, low, high, last, value, closeprice, marketprice, voltoday,
+          lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity
+        } = sec;
+        if (!subscription[boardid]) {
+          subscription[boardid] = [];
+        }
+        const lCurPriceDecimal = new Decimal(lcurrentprice || 0);
+        const row = {
+          SECID: secid,
+          BOARDID: boardid,
+          LOW: low,
+          HIGH: high,
+          MARKETPRICE: marketprice,
+          VOLTODAY: voltoday,
+          DEALPRICE_SHOW: lcurrentprice > 0 ? lcurrentprice : `-${lcurrentprice}`,
+          TYPE_SHOW: type.toLowerCase() === 'buy' ? 'Покупка' : 'Продажа',
+          QUANTITY: quantity,
+          YIELD: sec['yield'],
+          BPRICE: lCurPriceDecimal.mul(quantity || 0).toString(),
+          DEALPRICE: lCurPriceDecimal,
+          TYPE: type,
+          LCURRENTPRICE: '',
+          PL: '',
+        };
+
+        const id = rowsBuffer.getKey(row);
+        rowsBuffer.update(id, row);
+        subscription[boardid].push(secid);
+      }
+
+      const invocationId = stockClient.subscribeMarkets(subscription, buf => {
+
+        for (const row of buf) {
+          const id = rowsBuffer.getKey(row);
+          // SECID,BOARDID,BID,BIDDEPTH,OFFER,OFFERDEPTH,SPREAD,BIDDEPTHT,OFFERDEPTHT,OPEN,LOW,HIGH,LAST,LASTCHANGE,LASTCHANGEPRCNT,QTY,VALUE,VALUE_USD,WAPRICE,LASTCNGTOLASTWAPRICE,WAPTOPREVWAPRICEPRCNT,WAPTOPREVWAPRICE,CLOSEPRICE,MARKETPRICETODAY,MARKETPRICE,LASTTOPREVPRICE,NUMTRADES,VOLTODAY,VALTODAY,VALTODAY_USD,ETFSETTLEPRICE,TRADINGSTATUS,UPDATETIME,ADMITTEDQUOTE,LASTBID,LASTOFFER,LCLOSEPRICE,
+          // LCURRENTPRICE,MARKETPRICE2,NUMBIDS,NUMOFFERS,CHANGE,TIME,HIGHBID,LOWOFFER,PRICEMINUSPREVWAPRICE,OPENPERIODPRICE,SEQNUM,SYSTIME,CLOSINGAUCTIONPRICE,CLOSINGAUCTIONVOLUME,ISSUECAPITALIZATION,ISSUECAPITALIZATION_UPDATETIME,ETFSETTLECURRENCY,VALTODAY_RUR,SHORTNAME,PREVPRICE,LOTSIZE,FACEVALUE,STATUS,BOARDNAME,DECIMALS,SECNAME,REMARKS,MARKETCODE,INSTRID,SECTORID,MINSTEP,PREVWAPRICE,FACEUNIT,PREVDATE,ISSUESIZE,ISIN,LATNAME,REGNUMBER,PREVLEGALCLOSEPRICE,PREVADMITTEDQUOTE,CURRENCYID,SECTYPE,LISTLEVEL,SETTLEDATE
+          const { LCURRENTPRICE } = row;
+          const bufRow = rowsBuffer.get(id);
+
+          bufRow.LCURRENTPRICE = LCURRENTPRICE;
+          // bufRow.DEALPRICE - цена покупки
+          const pl = new Decimal(LCURRENTPRICE || 0).minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY).toString();
+          bufRow.PL = pl;
+          rowsBuffer.update(id, bufRow);
+        }
+
+        stockTable.render(rowsBuffer.asArray());
+      });
+    }).catch(e => console.error(e));
+
+    return {
+      // incocationId,
+      /*unsubscribe: () => {
+        stockClient.unsubscribe(invocationId);
+      }*/
+    }
+  }
+
+
   StockLib.run().then(() => {
     const stockClient = new StockLib.Client('https://test.brox.club:1313');
 
@@ -90,95 +191,10 @@
         {id: 'TYPE', hidden: true}
       ];
 
-      // String sort function
-      const sortFunc = (rows) => {
-        return rows.sort((a, b) => {
-          return a.SECID > b.SECID ? 1 : a.SECID < b.SECID ? -1 : 0;
-        });
-      };
-
-      const stockTable = new StockLib.Table(tabHolder, columns, sortFunc);
-      stockTable.onHeaderCellClick((e) => {
-        console.log('[[onHeaderCellClick]]', e);
-      });
-
-      stockTable.onCellClick((e) => {
-        console.log('[[onCellClick]]', e);
-      });
-
-      function RowsBuffer(columnsDefinition) {
-        const rows = new Map();
-        const ids = columnsDefinition.filter(col => col.key).map(col => col.id);
-        const getKey = eval(`r => [r.${ids.join(', r.')}].join('-')`);
-
-        return {
-          getKey,
-          get: (key) => {
-            return rows.get(key);
-          },
-          update: (key, row) => {
-            rows.set(key, row);
-          },
-          asArray: () => {
-            return Array.from(rows.values());
-          }
-        }
-      }
-
-      stockClient.listPortfolios(1).then(securities => {
-        const rowsBuffer = new RowsBuffer(columns);
-        const subscription = {};
-        for (const sec of securities) {
-          const {
-            board: boardid, secid, create_at, type, low, high, last, value, closeprice, marketprice, voltoday,
-            lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity
-          } = sec;
-          if (!subscription[boardid]) {
-            subscription[boardid] = [];
-          }
-          const lCurPriceDecimal = new Decimal(lcurrentprice || 0);
-          const row = {
-            SECID: secid,
-            BOARDID: boardid,
-            LOW: low,
-            HIGH: high,
-            MARKETPRICE: marketprice,
-            VOLTODAY: voltoday,
-            DEALPRICE_SHOW: lcurrentprice > 0 ? lcurrentprice : `-${lcurrentprice}`,
-            TYPE_SHOW: type.toLowerCase() === 'buy' ? 'Покупка' : 'Продажа',
-            QUANTITY: quantity,
-            YIELD: sec['yield'],
-            BPRICE: lCurPriceDecimal.mul(quantity || 0).toString(),
-            DEALPRICE: lCurPriceDecimal,
-            TYPE: type,
-            LCURRENTPRICE: '',
-            PL: '',
-          };
-
-          const id = rowsBuffer.getKey(row);
-          rowsBuffer.update(id, row);
-          subscription[boardid].push(secid);
-        }
-
-        const invocationId = stockClient.subscribeMarkets(subscription, buf => {
-
-          for (const row of buf) {
-            const id = rowsBuffer.getKey(row);
-            // SECID,BOARDID,BID,BIDDEPTH,OFFER,OFFERDEPTH,SPREAD,BIDDEPTHT,OFFERDEPTHT,OPEN,LOW,HIGH,LAST,LASTCHANGE,LASTCHANGEPRCNT,QTY,VALUE,VALUE_USD,WAPRICE,LASTCNGTOLASTWAPRICE,WAPTOPREVWAPRICEPRCNT,WAPTOPREVWAPRICE,CLOSEPRICE,MARKETPRICETODAY,MARKETPRICE,LASTTOPREVPRICE,NUMTRADES,VOLTODAY,VALTODAY,VALTODAY_USD,ETFSETTLEPRICE,TRADINGSTATUS,UPDATETIME,ADMITTEDQUOTE,LASTBID,LASTOFFER,LCLOSEPRICE,
-            // LCURRENTPRICE,MARKETPRICE2,NUMBIDS,NUMOFFERS,CHANGE,TIME,HIGHBID,LOWOFFER,PRICEMINUSPREVWAPRICE,OPENPERIODPRICE,SEQNUM,SYSTIME,CLOSINGAUCTIONPRICE,CLOSINGAUCTIONVOLUME,ISSUECAPITALIZATION,ISSUECAPITALIZATION_UPDATETIME,ETFSETTLECURRENCY,VALTODAY_RUR,SHORTNAME,PREVPRICE,LOTSIZE,FACEVALUE,STATUS,BOARDNAME,DECIMALS,SECNAME,REMARKS,MARKETCODE,INSTRID,SECTORID,MINSTEP,PREVWAPRICE,FACEUNIT,PREVDATE,ISSUESIZE,ISIN,LATNAME,REGNUMBER,PREVLEGALCLOSEPRICE,PREVADMITTEDQUOTE,CURRENCYID,SECTYPE,LISTLEVEL,SETTLEDATE
-            const { LCURRENTPRICE } = row;
-            const bufRow = rowsBuffer.get(id);
-
-            bufRow.LCURRENTPRICE = LCURRENTPRICE;
-            // bufRow.DEALPRICE - цена покупки
-            const pl = new Decimal(LCURRENTPRICE || 0).minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY).toString();
-            bufRow.PL = pl;
-            rowsBuffer.update(id, bufRow);
-          }
-
-          stockTable.render(rowsBuffer.asArray());
-        });
-      }).catch(e => console.error(e));
+      const tabHolder = document.getElementById('tabHolder');
+      const tabHolder1 = document.getElementById('tabHolder1');
+      const subscription1 = new TableSubscription(stockClient, tabHolder, columns);
+      const subscription2 = new TableSubscription(stockClient, tabHolder1, columns);
 
     });
 
