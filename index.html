@@ -136,6 +136,7 @@
           if (!subscription[boardid]) {
             subscription[boardid] = [];
           }
+          const lCurPriceDecimal = new Decimal(lcurrentprice || 0);
           const row = {
             SECID: secid,
             BOARDID: boardid,
@@ -147,8 +148,8 @@
             TYPE_SHOW: type.toLowerCase() === 'buy' ? 'Покупка' : 'Продажа',
             QUANTITY: quantity,
             YIELD: sec['yield'],
-            BPRICE: new Decimal(lcurrentprice).mul(quantity).toString(),
-            DEALPRICE: new Decimal(lcurrentprice),
+            BPRICE: lCurPriceDecimal.mul(quantity).toString(),
+            DEALPRICE: lCurPriceDecimal,
             TYPE: type,
             LCURRENTPRICE: '',
             PL: '',
@@ -170,7 +171,7 @@
 
             bufRow.LCURRENTPRICE = LCURRENTPRICE;
             // bufRow.DEALPRICE - цена покупки
-            const pl = new Decimal(LCURRENTPRICE).minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY).toString();
+            const pl = new Decimal(LCURRENTPRICE || 0).minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY).toString();
             bufRow.PL = pl;
             rowsBuffer.update(id, bufRow);
           }
