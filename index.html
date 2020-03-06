@@ -148,7 +148,7 @@
             TYPE_SHOW: type.toLowerCase() === 'buy' ? 'Покупка' : 'Продажа',
             QUANTITY: quantity,
             YIELD: sec['yield'],
-            BPRICE: lCurPriceDecimal.mul(quantity).toString(),
+            BPRICE: lCurPriceDecimal.mul(quantity || 0).toString(),
             DEALPRICE: lCurPriceDecimal,
             TYPE: type,
             LCURRENTPRICE: '',
