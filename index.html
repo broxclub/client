@@ -58,7 +58,7 @@
     }
   }
 
-  function TableSubscription(stockClient, tabHolder, columns) {
+  function TableSubscription(stockClient, tabHolder, columns, portfolioId) {
     // String sort function
     const sortFunc = (rows) => {
       return rows.sort((a, b) => {
@@ -75,7 +75,7 @@
       console.log('[[onCellClick]]', e);
     });
 
-    stockClient.listPortfolios(1).then(securities => {
+    stockClient.listPortfolios(portfolioId).then(securities => {
       const rowsBuffer = new RowsBuffer(columns);
       const subscription = {};
       for (const sec of securities) {
@@ -193,8 +193,8 @@
 
       const tabHolder = document.getElementById('tabHolder');
       const tabHolder1 = document.getElementById('tabHolder1');
-      const subscription1 = new TableSubscription(stockClient, tabHolder, columns);
-      const subscription2 = new TableSubscription(stockClient, tabHolder1, columns);
+      const subscription1 = new TableSubscription(stockClient, tabHolder, columns, 1);
+      const subscription2 = new TableSubscription(stockClient, tabHolder1, columns, 1);
 
     });
 
