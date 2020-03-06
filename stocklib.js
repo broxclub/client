@@ -250,7 +250,7 @@ const StockLib = (() => {
       };
     }
 
-    function StockTable(root, stockClient, queryType, columns, sortFunc) {
+    function StockTable(root, columns, sortFunc) {
       const rowsBuffer = new RowsBuffer(columns);
       const handlers = {
         onHeaderCellClick: () => void 0,
@@ -259,19 +259,21 @@ const StockLib = (() => {
       // Init React classes when React available
       const {ReactStockTable} = initClasses();
 
-      invocationId = stockClient.subscribeMarkets(queryType, buf => {
-
-        rowsBuffer.update(buf);
+      const render = (rows) => {
+        // rowsBuffer.update(rows);
         ReactDOM.render(React.createElement(ReactStockTable, {
           columns,
-          rows: rowsBuffer.asArray(sortFunc),
+          rows,
+          // rows: rowsBuffer.asArray(sortFunc),
           onHeaderCellClick: (e) => handlers.onHeaderCellClick(e),
           onCellClick: (e) => handlers.onCellClick(e),
         }), root);
-
-      });
+      };
 
       return {
+        render: (rows) => {
+          render(rows);
+        },
         onHeaderCellClick: (handler) => {
           handlers.onHeaderCellClick = handler;
         },
@@ -319,6 +321,9 @@ const StockLib = (() => {
         loadScript(`https://unpkg.com/react@16/umd/react.${mode === 'production' ? mode + '.min' : mode}.js`)
           .then(() => {
             return loadScript(`https://unpkg.com/react-dom@16/umd/react-dom.${mode === 'production' ? mode + '.min' : mode}.js`);
+          })
+          .then(() => {
+            return loadScript(`https://unpkg.com/decimal.js/decimal.min.js`);
           })
           .then(resolve)
           .catch(reject);

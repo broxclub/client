@@ -37,17 +37,7 @@
 <div id="tabHolder"></div>
 
 <script>
-
   const tabHolder = document.getElementById('tabHolder');
-
-  const queryTypes = [
-    {TQOB: ['SU26232RMFS7'], TQBR: ['QIWI', 'AFKS']},
-    // { TQOB: ['SU26232RMFS7'] },
-    // { TQBR: ['AFKS'] },
-  ];
-
-  const currentType = queryTypes[Math.floor(Math.random() * queryTypes.length)];
-
   StockLib.run().then(() => {
     const stockClient = new StockLib.Client('https://test.brox.club:1313');
 
@@ -57,9 +47,9 @@
         console.log(response);
       }).catch(e => console.error(e));*/
 
-      stockClient.listPortfolios(1).then(response => {
+      /*stockClient.listPortfolios(1).then(response => {
         console.log(response);
-      }).catch(e => console.error(e));
+      }).catch(e => console.error(e));*/
 
       /*stockClient.listSecurities({
         // fields: ['BOARDID', 'SECID', 'ISIN', 'SECNAME'],
@@ -79,14 +69,25 @@
         //  renderCell?: () => {}, // cell render callback (using if defined)
         //  renderHeaderCell?: () => {} // header cell render callback (using if defined)
         // }
-        {id: 'SECID', key: true, caption: 'Security', className: 'security', style: {width: '170px'}},
-        {id: 'SHORTNAME', caption: 'Short name', className: 'shortname', style: {width: '100px'}},
-        {id: 'SECNAME', caption: 'Security name', className: 'secname', style: {width: '200px'}},
-        {id: 'OPEN', caption: 'Open', style: {width: '200px'}},
-        {id: 'HIGH', caption: 'High', style: {width: '200px'}},
-        {id: 'LOW', caption: 'Low', style: {width: '200px'}},
-        {id: 'VALUE', caption: 'Value', style: {width: '200px'}},
-        {id: 'BOARDID', key: true, hidden: true}
+        {id: 'SECID', key: true, caption: 'Тикер', className: 'security', style: {width: '170px'}},
+        // {id: 'shortname', caption: 'Short name', className: 'shortname', style: {width: '100px'}},
+        // {id: 'secname', caption: 'Security name', className: 'secname', style: {width: '200px'}},
+        {id: 'LOW', caption: 'Мин. цена', style: {width: '100px'}},
+        {id: 'HIGH', caption: 'Макс. цена', style: {width: '100px'}},
+        {id: 'MARKETPRICE', caption: 'Рын. цена', style: {width: '100px'}},
+        {id: 'VOLTODAY', caption: 'Объём', style: { width: '100px' }},
+        {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}},
+        {id: 'YIELD', caption: 'Дивиденд', style: {width: '100px'}},
+        {id: 'TYPE_SHOW', caption: 'Тип сделки', style: {width: '100px'}},
+        {id: 'QUANTITY', caption: 'Кол-во бумаги', style: {width: '100px'}},
+        {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}},
+        {id: 'PL', caption: 'Прибыль/убыток', style: {width: '100px'}},
+        {id: 'BPRICE', caption: 'Стоимость лота', style: { width: '100px'}},
+        // {id: 'open', caption: 'Open', style: {width: '200px'}},
+        // {id: 'value', caption: 'Value', style: {width: '200px'}},
+        {id: 'BOARDID', key: true, hidden: true},
+        {id: 'DEALPRICE', hidden: true},
+        {id: 'TYPE', hidden: true}
       ];
 
       // String sort function
@@ -96,7 +97,7 @@
         });
       };
 
-      const stockTable = new StockLib.Table(tabHolder, stockClient, currentType, columns, sortFunc);
+      const stockTable = new StockLib.Table(tabHolder, columns, sortFunc);
       stockTable.onHeaderCellClick((e) => {
         console.log('[[onHeaderCellClick]]', e);
       });
@@ -104,6 +105,80 @@
       stockTable.onCellClick((e) => {
         console.log('[[onCellClick]]', e);
       });
+
+      function RowsBuffer(columnsDefinition) {
+        const rows = new Map();
+        const ids = columnsDefinition.filter(col => col.key).map(col => col.id);
+        const getKey = eval(`r => [r.${ids.join(', r.')}].join('-')`);
+
+        return {
+          getKey,
+          get: (key) => {
+            return rows.get(key);
+          },
+          update: (key, row) => {
+            rows.set(key, row);
+          },
+          asArray: () => {
+            return Array.from(rows.values());
+          }
+        }
+      }
+
+      stockClient.listPortfolios(1).then(securities => {
+        const rowsBuffer = new RowsBuffer(columns);
+        const subscription = {};
+        for (const sec of securities) {
+          const {
+            board: boardid, secid, create_at, type, low, high, last, value, closeprice, marketprice, voltoday,
+            lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity
+          } = sec;
+          if (!subscription[boardid]) {
+            subscription[boardid] = [];
+          }
+          const row = {
+            SECID: secid,
+            BOARDID: boardid,
+            LOW: low,
+            HIGH: high,
+            MARKETPRICE: marketprice,
+            VOLTODAY: voltoday,
+            DEALPRICE_SHOW: lcurrentprice > 0 ? lcurrentprice : `-${lcurrentprice}`,
+            TYPE_SHOW: type.toLowerCase() === 'buy' ? 'Покупка' : 'Продажа',
+            QUANTITY: quantity,
+            YIELD: sec['yield'],
+            BPRICE: new Decimal(lcurrentprice).mul(quantity).toString(),
+            DEALPRICE: new Decimal(lcurrentprice),
+            TYPE: type,
+            LCURRENTPRICE: '',
+            PL: '',
+          };
+
+          const id = rowsBuffer.getKey(row);
+          rowsBuffer.update(id, row);
+          subscription[boardid].push(secid);
+        }
+
+        const invocationId = stockClient.subscribeMarkets(subscription, buf => {
+
+          for (const row of buf) {
+            const id = rowsBuffer.getKey(row);
+            // SECID,BOARDID,BID,BIDDEPTH,OFFER,OFFERDEPTH,SPREAD,BIDDEPTHT,OFFERDEPTHT,OPEN,LOW,HIGH,LAST,LASTCHANGE,LASTCHANGEPRCNT,QTY,VALUE,VALUE_USD,WAPRICE,LASTCNGTOLASTWAPRICE,WAPTOPREVWAPRICEPRCNT,WAPTOPREVWAPRICE,CLOSEPRICE,MARKETPRICETODAY,MARKETPRICE,LASTTOPREVPRICE,NUMTRADES,VOLTODAY,VALTODAY,VALTODAY_USD,ETFSETTLEPRICE,TRADINGSTATUS,UPDATETIME,ADMITTEDQUOTE,LASTBID,LASTOFFER,LCLOSEPRICE,
+            // LCURRENTPRICE,MARKETPRICE2,NUMBIDS,NUMOFFERS,CHANGE,TIME,HIGHBID,LOWOFFER,PRICEMINUSPREVWAPRICE,OPENPERIODPRICE,SEQNUM,SYSTIME,CLOSINGAUCTIONPRICE,CLOSINGAUCTIONVOLUME,ISSUECAPITALIZATION,ISSUECAPITALIZATION_UPDATETIME,ETFSETTLECURRENCY,VALTODAY_RUR,SHORTNAME,PREVPRICE,LOTSIZE,FACEVALUE,STATUS,BOARDNAME,DECIMALS,SECNAME,REMARKS,MARKETCODE,INSTRID,SECTORID,MINSTEP,PREVWAPRICE,FACEUNIT,PREVDATE,ISSUESIZE,ISIN,LATNAME,REGNUMBER,PREVLEGALCLOSEPRICE,PREVADMITTEDQUOTE,CURRENCYID,SECTYPE,LISTLEVEL,SETTLEDATE
+            const { LCURRENTPRICE } = row;
+            const bufRow = rowsBuffer.get(id);
+
+            bufRow.LCURRENTPRICE = LCURRENTPRICE;
+            // bufRow.DEALPRICE - цена покупки
+            const pl = new Decimal(LCURRENTPRICE).minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY).toString();
+            bufRow.PL = pl;
+            rowsBuffer.update(id, bufRow);
+          }
+
+          stockTable.render(rowsBuffer.asArray());
+        });
+      }).catch(e => console.error(e));
+
     });
 
   });
