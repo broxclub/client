@@ -7,20 +7,34 @@
     .stock-table {
       display: flex;
       flex-direction: column;
+      margin-bottom: 10px;
+      border-right: 1px solid #666;
+      border-left: 1px solid #666;
+      border-bottom: 1px solid #666;
     }
 
     .stock-table-header {
       display: flex;
+      border-bottom: 1px solid #666;
+      border-top: 1px solid #666;
     }
 
     .stock-table-header-cell {
       display: flex;
-      border: 1px solid #eee8;
       padding: 4px;
+      border-collapse: collapse;
+    }
+
+    .stock-table-header-cell:not(:last-child) {
+      border-right: 1px solid #666;
     }
 
     .stock-table-row {
       display: flex;
+    }
+
+    .stock-table-row:nth-child(even) {
+      background: #eee;
     }
 
     .stock-table-row-cell {
@@ -36,6 +50,7 @@
 
 <div id="tabHolder"></div>
 <div id="tabHolder1"></div>
+<div id="tabHolder2"></div>
 
 <script>
 
@@ -49,11 +64,15 @@
       get: (key) => {
         return rows.get(key);
       },
-      update: (key, row) => {
-        rows.set(key, row);
+      update: (key, rowsArray) => {
+        rows.set(key, rowsArray);
       },
       asArray: () => {
-        return Array.from(rows.values());
+        const res = [];
+        for (const rowsArray of Array.from(rows.values())) {
+          res.push.apply(res, rowsArray);
+        }
+        return res;
       }
     }
   }
@@ -66,7 +85,7 @@
       });
     };
 
-    const stockTable = new StockLib.Table(tabHolder, columns, sortFunc);
+    const stockTable = new StockLib.Table(tabHolder, columns);
     stockTable.onHeaderCellClick((e) => {
       console.log('[[onHeaderCellClick]]', e);
     });
@@ -81,12 +100,13 @@
       for (const sec of securities) {
         const {
           board: boardid, secid, create_at, type, low, high, last, value, closeprice, marketprice, voltoday,
-          lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity
+          lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity, buyprice, pnl
         } = sec;
         if (!subscription[boardid]) {
           subscription[boardid] = [];
         }
         const lCurPriceDecimal = new Decimal(lcurrentprice || 0);
+        const isBuy = type.toLowerCase() === 'buy';
         const row = {
           SECID: secid,
           BOARDID: boardid,
@@ -95,18 +115,21 @@
           MARKETPRICE: marketprice,
           VOLTODAY: voltoday,
           DEALPRICE_SHOW: lcurrentprice > 0 ? lcurrentprice : `-${lcurrentprice}`,
-          TYPE_SHOW: type.toLowerCase() === 'buy' ? 'Покупка' : 'Продажа',
+          TYPE_SHOW: isBuy ? 'Покупка' : 'Продажа',
           QUANTITY: quantity,
           YIELD: sec['yield'],
-          BPRICE: lCurPriceDecimal.mul(quantity || 0).toString(),
+          BPRICE: `${isBuy ? '-' : '+'}${lCurPriceDecimal.mul(quantity || 0).toString()}`,
           DEALPRICE: lCurPriceDecimal,
+          BUYPRICE: buyprice,
           TYPE: type,
+          PL: new Decimal(pnl).toString(),
           LCURRENTPRICE: '',
-          PL: '',
         };
 
         const id = rowsBuffer.getKey(row);
-        rowsBuffer.update(id, row);
+        const rowsArray = rowsBuffer.get(id) || [];
+        rowsArray.push(row);
+        rowsBuffer.update(id, rowsArray);
         subscription[boardid].push(secid);
       }
 
@@ -116,17 +139,25 @@
           const id = rowsBuffer.getKey(row);
           // SECID,BOARDID,BID,BIDDEPTH,OFFER,OFFERDEPTH,SPREAD,BIDDEPTHT,OFFERDEPTHT,OPEN,LOW,HIGH,LAST,LASTCHANGE,LASTCHANGEPRCNT,QTY,VALUE,VALUE_USD,WAPRICE,LASTCNGTOLASTWAPRICE,WAPTOPREVWAPRICEPRCNT,WAPTOPREVWAPRICE,CLOSEPRICE,MARKETPRICETODAY,MARKETPRICE,LASTTOPREVPRICE,NUMTRADES,VOLTODAY,VALTODAY,VALTODAY_USD,ETFSETTLEPRICE,TRADINGSTATUS,UPDATETIME,ADMITTEDQUOTE,LASTBID,LASTOFFER,LCLOSEPRICE,
           // LCURRENTPRICE,MARKETPRICE2,NUMBIDS,NUMOFFERS,CHANGE,TIME,HIGHBID,LOWOFFER,PRICEMINUSPREVWAPRICE,OPENPERIODPRICE,SEQNUM,SYSTIME,CLOSINGAUCTIONPRICE,CLOSINGAUCTIONVOLUME,ISSUECAPITALIZATION,ISSUECAPITALIZATION_UPDATETIME,ETFSETTLECURRENCY,VALTODAY_RUR,SHORTNAME,PREVPRICE,LOTSIZE,FACEVALUE,STATUS,BOARDNAME,DECIMALS,SECNAME,REMARKS,MARKETCODE,INSTRID,SECTORID,MINSTEP,PREVWAPRICE,FACEUNIT,PREVDATE,ISSUESIZE,ISIN,LATNAME,REGNUMBER,PREVLEGALCLOSEPRICE,PREVADMITTEDQUOTE,CURRENCYID,SECTYPE,LISTLEVEL,SETTLEDATE
-          const { LCURRENTPRICE } = row;
-          const bufRow = rowsBuffer.get(id);
+          const { YIELD, LCURRENTPRICE } = row;
+          const rowsArray = rowsBuffer.get(id);
 
-          bufRow.LCURRENTPRICE = LCURRENTPRICE;
-          // bufRow.DEALPRICE - цена покупки
-          const pl = new Decimal(LCURRENTPRICE || 0).minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY).toString();
-          bufRow.PL = pl;
-          rowsBuffer.update(id, bufRow);
+          const updateRows = rowsArray.map(bufRow => {
+            bufRow.LCURRENTPRICE = LCURRENTPRICE;
+            // bufRow.DEALPRICE - цена покупки
+            if (bufRow.TYPE === 'buy') {
+              const pl = new Decimal(LCURRENTPRICE || 0).minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY).toString();
+              bufRow.PL = pl;
+            }
+            bufRow.YIELD = YIELD;
+
+            return bufRow;
+          });
+
+          rowsBuffer.update(id, updateRows);
         }
 
-        stockTable.render(rowsBuffer.asArray());
+        stockTable.render(sortFunc(rowsBuffer.asArray()));
       });
     }).catch(e => console.error(e));
 
@@ -193,8 +224,10 @@
 
       const tabHolder = document.getElementById('tabHolder');
       const tabHolder1 = document.getElementById('tabHolder1');
+      const tabHolder2 = document.getElementById('tabHolder2');
       const subscription1 = new TableSubscription(stockClient, tabHolder, columns, 1);
-      const subscription2 = new TableSubscription(stockClient, tabHolder1, columns, 1);
+      const subscription2 = new TableSubscription(stockClient, tabHolder1, columns, 2);
+      const subscription3 = new TableSubscription(stockClient, tabHolder2, columns, 3);
 
     });
 

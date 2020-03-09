@@ -250,7 +250,7 @@ const StockLib = (() => {
       };
     }
 
-    function StockTable(root, columns, sortFunc) {
+    function StockTable(root, columns) {
       const rowsBuffer = new RowsBuffer(columns);
       const handlers = {
         onHeaderCellClick: () => void 0,
