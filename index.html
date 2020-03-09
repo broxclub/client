@@ -118,7 +118,7 @@
           TYPE_SHOW: isBuy ? 'Покупка' : 'Продажа',
           QUANTITY: quantity,
           YIELD: sec['yield'],
-          BPRICE: `${isBuy ? '-' : '+'}${lCurPriceDecimal.mul(quantity || 0).toString()}`,
+          BPRICE: `${isBuy ? lCurPriceDecimal.mul(quantity || 0).toString() : '0'}`,
           DEALPRICE: lCurPriceDecimal,
           BUYPRICE: buyprice,
           TYPE: type,
