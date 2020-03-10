@@ -154,7 +154,7 @@ const StockLib = (() => {
         }
 
         componentDidMount() {
-          const {columns} = this.props;
+          const { columns } = this.props;
           this.setState({
             visibleColumns: columns.filter(col => !col.hidden),
             keys: columns.filter(col => col.key)
@@ -166,13 +166,14 @@ const StockLib = (() => {
             className: `${baseClassName}`
           }, [
             this._renderHeader(),
-            this._renderRows()
+            this._renderRows(),
+            this._renderTotals(),
           ]);
         }
 
         _renderHeader() {
-          const {onHeaderCellClick} = this.props;
-          const {visibleColumns} = this.state;
+          const { onHeaderCellClick } = this.props;
+          const { visibleColumns } = this.state;
           return e(
             'div',
             {key: 'header', className: `${baseClassName}-header`},
@@ -193,6 +194,31 @@ const StockLib = (() => {
             ));
         }
 
+        _renderTotals() {
+          const { totals, onFooterCellClick } = this.props;
+          const { visibleColumns } = this.state;
+          return e(
+            'div',
+            {key: 'footer', className: `${baseClassName}-footer`},
+            visibleColumns.map((col, index) => {
+              const style = col.style || {};
+              const text = col.id in totals ? totals[col.id] : undefined;
+
+              return col.renderFooterCell ? col.renderFooterCell(col) :
+                e(
+                  'div',
+                  {
+                    key: index,
+                    className: `${baseClassName}-footer-cell ${text ? `${baseClassName}-footer-cell-filled ` : ''}${baseClassName}-footer-cell-${col.id}`,
+                    style,
+                    onClick: onFooterCellClick.bind(this, col.id),
+                  },
+                  text
+                )
+            })
+          );
+        }
+
         _renderRows() {
           const {rows} = this.props;
           const {visibleColumns} = this.state;
@@ -208,9 +234,10 @@ const StockLib = (() => {
           const {onCellClick} = this.props;
           return columns.map((col, index) => {
               const style = col.style || {};
+              const className = `${baseClassName}-row-cell ${baseClassName}-row-cell-${col.id}`;
 
               return col.renderCell ?
-                col.renderCell(columns, row, rowIndex) :
+                col.renderCell(col, row, rowIndex, className) :
                 e(
                   'div',
                   {
@@ -229,51 +256,30 @@ const StockLib = (() => {
       return {ReactStockTable};
     };
 
-    function RowsBuffer(columns) {
-      const rows = new Map();
-      const ids = columns.filter(col => col.key).map(col => col.id);
-
-      const getKey = eval(`r => [r.${ids.join(', r.')}].join('-')`);
-
-      return {
-        update: (buf) => {
-          for (let i = 0; i < buf.length; i++) {
-            const row = buf[i];
-            const key = getKey(row);
-            rows.set(key, row);
-          }
-        },
-        asArray: (externalSort) => {
-          const res = Array.from(rows.values());
-          return externalSort ? externalSort(res) : res;
-        }
-      };
-    }
-
     function StockTable(root, columns) {
-      const rowsBuffer = new RowsBuffer(columns);
       const handlers = {
         onHeaderCellClick: () => void 0,
+        onFooterCellClick: () => void 0,
         onCellClick: () => void 0,
       };
       // Init React classes when React available
       const {ReactStockTable} = initClasses();
 
-      const render = (rows) => {
+      const render = (rows, totals) => {
         // rowsBuffer.update(rows);
         ReactDOM.render(React.createElement(ReactStockTable, {
           columns,
           rows,
+          totals,
           // rows: rowsBuffer.asArray(sortFunc),
           onHeaderCellClick: (e) => handlers.onHeaderCellClick(e),
+          onFooterCellClick: (e) => handlers.onFooterCellClick(e),
           onCellClick: (e) => handlers.onCellClick(e),
         }), root);
       };
 
       return {
-        render: (rows) => {
-          render(rows);
-        },
+        render,
         onHeaderCellClick: (handler) => {
           handlers.onHeaderCellClick = handler;
         },

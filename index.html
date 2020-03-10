@@ -10,7 +10,6 @@
       margin-bottom: 10px;
       border-right: 1px solid #666;
       border-left: 1px solid #666;
-      border-bottom: 1px solid #666;
     }
 
     .stock-table-header {
@@ -43,6 +42,31 @@
       padding: 4px;
       white-space: normal;
       word-break: break-all;
+    }
+
+    .stock-table-footer {
+      display: flex;
+      border-bottom: 1px solid #666;
+      border-top: 1px solid #666;
+    }
+
+    .stock-table-footer-cell {
+      display: flex;
+      padding: 4px;
+      border-collapse: collapse;
+    }
+
+    .stock-table-footer-cell-PL,
+    .stock-table-footer-cell-BPRICE {
+      border-left: 1px solid #666;
+    }
+
+    .stock-table-row-cell-ICO {
+      justify-content: center;
+    }
+
+    .stock-table-row-cell-ICO img {
+      width: 20px;
     }
   </style>
 </head>
@@ -86,13 +110,13 @@
     };
 
     const stockTable = new StockLib.Table(tabHolder, columns);
-    stockTable.onHeaderCellClick((e) => {
+    /*stockTable.onHeaderCellClick((e) => {
       console.log('[[onHeaderCellClick]]', e);
     });
 
     stockTable.onCellClick((e) => {
       console.log('[[onCellClick]]', e);
-    });
+    });*/
 
     stockClient.listPortfolios(portfolioId).then(securities => {
       const rowsBuffer = new RowsBuffer(columns);
@@ -157,7 +181,23 @@
           rowsBuffer.update(id, updateRows);
         }
 
-        stockTable.render(sortFunc(rowsBuffer.asArray()));
+        const sortedRowsArray = sortFunc(rowsBuffer.asArray());
+        const totals = {
+          PL: new Decimal(0),
+          BPRICE: new Decimal(0),
+        };
+        sortedRowsArray.map(row => {
+          totals.PL = totals.PL.add(new Decimal(row.PL));
+          totals.BPRICE = totals.BPRICE.add(new Decimal(row.BPRICE));
+        });
+
+        stockTable.render(
+          sortedRowsArray,
+          {
+            PL: totals.PL.toString(),
+            BPRICE: totals.BPRICE.toString(),
+          }
+        );
       });
     }).catch(e => console.error(e));
 
@@ -171,7 +211,7 @@
 
 
   StockLib.run().then(() => {
-    const stockClient = new StockLib.Client('https://test.brox.club:1313');
+    const stockClient = new StockLib.Client('https://api.brox.club:1313');
 
     stockClient.connect().then(() => {
 
@@ -201,6 +241,19 @@
         //  renderCell?: () => {}, // cell render callback (using if defined)
         //  renderHeaderCell?: () => {} // header cell render callback (using if defined)
         // }
+        {id: 'ICO', style: { width: '40px' },
+          renderCell: (col, row, rowIndex, className) => {
+            return React.createElement('div', {
+                className,
+                style: col.style,
+                key: `img-${rowIndex}`,
+              },
+              React.createElement('img', {
+                src: `https://api.brox.club/ICO/${row.SECID}.ico`,
+              })
+            );
+          }
+        },
         {id: 'SECID', key: true, caption: 'Тикер', className: 'security', style: {width: '170px'}},
         // {id: 'shortname', caption: 'Short name', className: 'shortname', style: {width: '100px'}},
         // {id: 'secname', caption: 'Security name', className: 'secname', style: {width: '200px'}},
