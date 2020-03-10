@@ -101,6 +101,34 @@
     }
   }
 
+  function rowsCollapser(rows) {
+    const map = new Map();
+    for (const row of rows) {
+      const { SECID, TYPE } = row;
+      const id = `${SECID}-${TYPE}`;
+      if (map.has(id)) {
+        const prevRow = map.get(id);
+        const newRow = {
+          ...prevRow,
+          LOW: row.LOW,
+          HIGH: row.HIGH,
+          MARKETPRICE: row.MARKETPRICE,
+          VOLTODAY: row.VOLTODAY,
+          LCURRENTPRICE: row.LCURRENTPRICE,
+          YIELD: row.YIELD,
+          DEALPRICE_SHOW: row.DEALPRICE_SHOW,
+          QUANTITY: new Decimal(row.QUANTITY).plus(prevRow.QUANTITY).toNumber(),
+          PL: new Decimal(row.PL).plus(prevRow.PL).toNumber(),
+          BPRICE: new Decimal(row.BPRICE).plus(prevRow.BPRICE).toNumber(),
+        };
+        map.set(id, newRow);
+      } else {
+        map.set(id, row);
+      }
+    }
+    return Array.from(map.values());
+  }
+
   function TableSubscription(stockClient, tabHolder, columns, portfolioId) {
     // String sort function
     const sortFunc = (rows) => {
@@ -192,7 +220,7 @@
         });
 
         stockTable.render(
-          sortedRowsArray,
+          rowsCollapser(sortedRowsArray),
           {
             PL: totals.PL.toString(),
             BPRICE: totals.BPRICE.toString(),
