@@ -103,6 +103,7 @@
 
   function rowsCollapser(rows) {
     const map = new Map();
+    const secIds = new Set();
     for (const row of rows) {
       const { SECID, TYPE } = row;
       const id = `${SECID}-${TYPE}`;
@@ -124,6 +125,20 @@
         map.set(id, newRow);
       } else {
         map.set(id, row);
+        secIds.add(SECID);
+      }
+    }
+
+    // collapse zero sum
+    for (const SECID of secIds) {
+      const sellId = `${SECID}-sell`;
+      const buyId = `${SECID}-buy`;
+      const sell = map.get(sellId);
+      const buy = map.get(buyId);
+
+      if (buy && sell && buy.QUANTITY - sell.QUANTITY === 0) {
+        map.delete(sellId);
+        map.delete(buyId);
       }
     }
     return Array.from(map.values());
