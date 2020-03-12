@@ -268,7 +268,7 @@
   }
 
 
-  StockLib.run('development').then(() => {
+  StockLib.run(document.domain === 'localhost' ? 'development' :  'production').then(() => {
     const stockClient = new StockLib.Client('https://api.brox.club:1313');
 
     stockClient.connect().then(() => {
