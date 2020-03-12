@@ -57,6 +57,7 @@
     }
 
     .stock-table-footer-cell-PL,
+    .stock-table-footer-cell-PLPERCENT_SHOW,
     .stock-table-footer-cell-BPRICE {
       border-left: 1px solid #666;
     }
@@ -174,6 +175,9 @@
         }
         const lCurPriceDecimal = new Decimal(lcurrentprice || 0);
         const isBuy = type.toLowerCase() === 'buy';
+        const bpriceDecimal = lCurPriceDecimal.mul(quantity || 0);
+        const pnlDecimal = new Decimal(pnl);
+        const plpercent = pnlDecimal.mul(100).div(bpriceDecimal);
         const row = {
           SECID: secid,
           BOARDID: boardid,
@@ -185,11 +189,13 @@
           TYPE_SHOW: isBuy ? 'Покупка' : 'Продажа',
           QUANTITY: quantity,
           YIELD: sec['yield'],
-          BPRICE: `${isBuy ? lCurPriceDecimal.mul(quantity || 0).toString() : '0'}`,
-          DEALPRICE: lCurPriceDecimal,
+          BPRICE: `${isBuy ? bpriceDecimal.toString() : '0'}`,
+          DEALPRICE: lCurPriceDecimal.toNumber(),
           BUYPRICE: buyprice,
           TYPE: type,
-          PL: new Decimal(pnl).toString(),
+          PL: pnl,
+          PLPERCENT_SHOW: `${plpercent.toString()}`,
+          PLPERCENT: plpercent.toFixed(2),
           LCURRENTPRICE: '',
         };
 
@@ -213,8 +219,14 @@
             bufRow.LCURRENTPRICE = LCURRENTPRICE;
             // bufRow.DEALPRICE - цена покупки
             if (bufRow.TYPE === 'buy') {
-              const pl = new Decimal(LCURRENTPRICE || 0).minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY).toString();
-              bufRow.PL = pl;
+              const lcurrentprice = new Decimal(LCURRENTPRICE || 0);
+              const pl = lcurrentprice.minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY);
+              const plpercent = pl.mul(100).div(bufRow.BPRICE);
+              bufRow.BRPICE = lcurrentprice.mul(bufRow.QUANTITY).toNumber();
+              bufRow.PL = pl.toString();
+              bufRow.PLPERCENT_SHOW = `${plpercent.toFixed(2)} %`;
+              bufRow.PLPERCENT = plpercent.toFixed(2);
+              // PL * 100 / BPRICE
             }
             bufRow.YIELD = YIELD;
 
@@ -228,10 +240,12 @@
         const totals = {
           PL: new Decimal(0),
           BPRICE: new Decimal(0),
+          PLPERCENT: new Decimal(0),
         };
         sortedRowsArray.map(row => {
-          totals.PL = totals.PL.add(new Decimal(row.PL));
-          totals.BPRICE = totals.BPRICE.add(new Decimal(row.BPRICE));
+          totals.PL = totals.PL.add(row.PL);
+          totals.BPRICE = totals.BPRICE.add(row.BPRICE);
+          totals.PLPERCENT = totals.PLPERCENT.add(row.PLPERCENT);
         });
 
         stockTable.render(
@@ -239,6 +253,7 @@
           {
             PL: totals.PL.toString(),
             BPRICE: totals.BPRICE.toString(),
+            PLPERCENT_SHOW: totals.PLPERCENT.toString(),
           }
         );
       });
@@ -253,7 +268,7 @@
   }
 
 
-  StockLib.run().then(() => {
+  StockLib.run('development').then(() => {
     const stockClient = new StockLib.Client('https://api.brox.club:1313');
 
     stockClient.connect().then(() => {
@@ -310,12 +325,14 @@
         {id: 'QUANTITY', caption: 'Кол-во бумаги', style: {width: '100px'}},
         {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}},
         {id: 'PL', caption: 'Прибыль/убыток', style: {width: '100px'}},
+        {id: 'PLPERCENT_SHOW', caption: '%', style: {width: '100px'}},
         {id: 'BPRICE', caption: 'Стоимость лота', style: { width: '100px'}},
         // {id: 'open', caption: 'Open', style: {width: '200px'}},
         // {id: 'value', caption: 'Value', style: {width: '200px'}},
         {id: 'BOARDID', key: true, hidden: true},
         {id: 'DEALPRICE', hidden: true},
-        {id: 'TYPE', hidden: true}
+        {id: 'TYPE', hidden: true},
+        {id: 'PLPERCENT', hidden: true}
       ];
 
       const tabHolder = document.getElementById('tabHolder');
