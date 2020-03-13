@@ -25,6 +25,7 @@
     }
 
     .stock-table-header-cell:not(:last-child) {
+      border-left: 1px solid transparent;
       border-right: 1px solid #666;
     }
 
@@ -53,7 +54,10 @@
     .stock-table-footer-cell {
       display: flex;
       padding: 4px;
+      border: 1px solid transparent;
       border-collapse: collapse;
+      white-space: normal;
+      word-break: break-all;
     }
 
     .stock-table-footer-cell-PL,
@@ -73,9 +77,9 @@
 </head>
 <body>
 
-<div id="tabHolder"></div>
-<div id="tabHolder1"></div>
-<div id="tabHolder2"></div>
+<div id="tabHolder" style="display: flex;"></div>
+<div id="tabHolder1" style="display: flex;"></div>
+<div id="tabHolder2" style="display: flex;"></div>
 
 <script>
 
@@ -180,6 +184,7 @@
         const plpercent = pnlDecimal.mul(100).div(bpriceDecimal);
         const row = {
           SECID: secid,
+          DATE: create_at,
           BOARDID: boardid,
           LOW: low,
           HIGH: high,
@@ -222,7 +227,7 @@
               const lcurrentprice = new Decimal(LCURRENTPRICE || 0);
               const pl = lcurrentprice.minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY);
               const plpercent = pl.mul(100).div(bufRow.BPRICE);
-              bufRow.BRPICE = lcurrentprice.mul(bufRow.QUANTITY).toNumber();
+              bufRow.BPRICE = lcurrentprice.mul(bufRow.QUANTITY).toNumber();
               bufRow.PL = pl.toString();
               bufRow.PLPERCENT_SHOW = `${plpercent.toFixed(2)} %`;
               bufRow.PLPERCENT = plpercent.toFixed(2);
@@ -313,22 +318,23 @@
           }
         },
         {id: 'SECID', key: true, caption: 'Тикер', className: 'security', style: {width: '170px'}},
-        // {id: 'shortname', caption: 'Short name', className: 'shortname', style: {width: '100px'}},
-        // {id: 'secname', caption: 'Security name', className: 'secname', style: {width: '200px'}},
-        {id: 'LOW', caption: 'Мин. цена', style: {width: '100px'}},
-        {id: 'HIGH', caption: 'Макс. цена', style: {width: '100px'}},
-        {id: 'MARKETPRICE', caption: 'Рын. цена', style: {width: '100px'}},
-        {id: 'VOLTODAY', caption: 'Объём', style: { width: '100px' }},
-        {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}},
-        {id: 'YIELD', caption: 'Дивиденд', style: {width: '100px'}},
         {id: 'TYPE_SHOW', caption: 'Тип сделки', style: {width: '100px'}},
-        {id: 'QUANTITY', caption: 'Кол-во бумаги', style: {width: '100px'}},
+        {id: 'DATE', caption: 'Дата сделки', style: {width: '150px'}},
+        {id: 'QUANTITY', caption: 'Кол-во бумаг в портфеле', style: {width: '170px'}},
+
         {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}},
-        {id: 'PL', caption: 'Прибыль/убыток', style: {width: '100px'}},
+        {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}},
+        {id: 'PL', caption: 'Прибыль/убыток', style: {width: '150px'}},
+
         {id: 'PLPERCENT_SHOW', caption: '%', style: {width: '100px'}},
-        {id: 'BPRICE', caption: 'Стоимость лота', style: { width: '100px'}},
-        // {id: 'open', caption: 'Open', style: {width: '200px'}},
-        // {id: 'value', caption: 'Value', style: {width: '200px'}},
+        {id: 'BPRICE', caption: 'Цена бумаг в портфеле', style: { width: '170px'}},
+
+        // {id: 'LOW', caption: 'Мин. цена', style: {width: '100px'}},
+        // {id: 'HIGH', caption: 'Макс. цена', style: {width: '100px'}},
+        // {id: 'MARKETPRICE', caption: 'Рын. цена', style: {width: '100px'}},
+        // {id: 'VOLTODAY', caption: 'Объём', style: { width: '100px' }},
+        // {id: 'YIELD', caption: 'Дивиденд', style: {width: '100px'}},
+
         {id: 'BOARDID', key: true, hidden: true},
         {id: 'DEALPRICE', hidden: true},
         {id: 'TYPE', hidden: true},
