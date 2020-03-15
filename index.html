@@ -293,14 +293,17 @@
           totals.PLPERCENT = totals.PLPERCENT.add(row.PLPERCENT);
         });
 
+        // 1: PL
+        // 2: BPRICE
+        // 3: PLPERCENT_SHOW
+
         stockTable.render(
           rowsCollapser(sortedRowsArray),
           caption,
           {
             PL: totals.PL.toString(),
             BPRICE: totals.BPRICE.toString(),
-            // PLPERCENT_SHOW = BPRICE / (PL * 100)
-            PLPERCENT_SHOW: totals.BPRICE.div(totals.PL.mul(100)).toFixed(2),
+            PLPERCENT_SHOW: totals.PL.mul(100).div(totals.BPRICE).toFixed(2),
           }
         );
       });
