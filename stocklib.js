@@ -165,10 +165,20 @@ const StockLib = (() => {
           return e('div', {
             className: `${baseClassName}`
           }, [
+            this.props.caption && this._renderCaption(),
             this._renderHeader(),
             this._renderRows(),
             this._renderTotals(),
           ]);
+        }
+
+        _renderCaption() {
+          const { caption } = this.props;
+          return e(
+            'div',
+            {key: 'caption', className: `${baseClassName}-caption`},
+            caption,
+          );
         }
 
         _renderHeader() {
@@ -265,12 +275,13 @@ const StockLib = (() => {
       // Init React classes when React available
       const {ReactStockTable} = initClasses();
 
-      const render = (rows, totals) => {
+      const render = (rows, caption, totals) => {
         // rowsBuffer.update(rows);
         ReactDOM.render(React.createElement(ReactStockTable, {
           columns,
           rows,
           totals,
+          caption,
           // rows: rowsBuffer.asArray(sortFunc),
           onHeaderCellClick: (e) => handlers.onHeaderCellClick(e),
           onFooterCellClick: (e) => handlers.onFooterCellClick(e),

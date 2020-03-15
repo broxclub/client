@@ -19,6 +19,12 @@
       border-left: 1px solid #666;
     }
 
+    .stock-table-caption {
+      font-weight: bold;
+      border-top: 1px solid #666;
+      padding: 4px;
+    }
+
     .stock-table-header {
       display: flex;
       border-bottom: 1px solid #666;
@@ -86,14 +92,6 @@
       flex-direction: column;
     }
 
-    .portfolio-table-caption {
-      font-weight: bold;
-      border-top: 1px solid #666;
-      border-left: 1px solid #666;
-      border-right: 1px solid #666;
-      padding: 4px;
-    }
-
     .portfolio-table-content {
       display: flex;
       position: relative;
@@ -103,15 +101,12 @@
 <body>
 
 <div class="portfolio-table">
-  <div class="portfolio-table-caption">Консервативный</div>
   <div id="tabHolder" class="portfolio-table-content"></div>
 </div>
 <div class="portfolio-table">
-  <div class="portfolio-table-caption">Рискованный</div>
   <div id="tabHolder1" class="portfolio-table-content"></div>
 </div>
 <div class="portfolio-table">
-  <div class="portfolio-table-caption">Базовый</div>
   <div id="tabHolder2" class="portfolio-table-content"></div>
 </div>
 
@@ -207,6 +202,9 @@
       console.log('[[onCellClick]]', e);
     });*/
 
+    const captions = [, 'Базовый', 'Рискованный', 'Консервативный'];
+    const caption = captions[portfolioId];
+
     stockClient.listPortfolios(portfolioId).then(securities => {
       const rowsBuffer = new RowsBuffer(columns);
       const subscription = {};
@@ -297,6 +295,7 @@
 
         stockTable.render(
           rowsCollapser(sortedRowsArray),
+          caption,
           {
             PL: totals.PL.toString(),
             BPRICE: totals.BPRICE.toString(),
