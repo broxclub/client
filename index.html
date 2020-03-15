@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
-  <script src="./stocklib.js"></script>
+  <script type="text/javascript" src="./stocklib.js"></script>
   <style>
     div {
       box-sizing: border-box;
@@ -299,7 +299,8 @@
           {
             PL: totals.PL.toString(),
             BPRICE: totals.BPRICE.toString(),
-            PLPERCENT_SHOW: totals.PLPERCENT.div(sortedRowsArray.length).toFixed(2),
+            // PLPERCENT_SHOW = BPRICE / (PL * 100)
+            PLPERCENT_SHOW: totals.BPRICE.div(totals.PL.mul(100)).toFixed(2),
           }
         );
       });
