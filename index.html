@@ -5,6 +5,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
   <script src="./stocklib.js"></script>
   <style>
+    div {
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+    }
+
     .stock-table {
       display: flex;
       flex-direction: column;
@@ -74,13 +80,40 @@
     .stock-table-row-cell-ICO img {
       width: 20px;
     }
+
+    .portfolio-table {
+      display: inline-flex;
+      flex-direction: column;
+    }
+
+    .portfolio-table-caption {
+      font-weight: bold;
+      border-top: 1px solid #666;
+      border-left: 1px solid #666;
+      border-right: 1px solid #666;
+      padding: 4px;
+    }
+
+    .portfolio-table-content {
+      display: flex;
+      position: relative;
+    }
   </style>
 </head>
 <body>
 
-<div id="tabHolder" style="display: flex;"></div>
-<div id="tabHolder1" style="display: flex;"></div>
-<div id="tabHolder2" style="display: flex;"></div>
+<div class="portfolio-table">
+  <div class="portfolio-table-caption">Консервативный</div>
+  <div id="tabHolder" class="portfolio-table-content"></div>
+</div>
+<div class="portfolio-table">
+  <div class="portfolio-table-caption">Рискованный</div>
+  <div id="tabHolder1" class="portfolio-table-content"></div>
+</div>
+<div class="portfolio-table">
+  <div class="portfolio-table-caption">Базовый</div>
+  <div id="tabHolder2" class="portfolio-table-content"></div>
+</div>
 
 <script>
 
