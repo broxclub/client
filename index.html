@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
   <script src="./stocklib.js"></script>
   <style>
     .stock-table {
@@ -82,6 +83,13 @@
 <div id="tabHolder2" style="display: flex;"></div>
 
 <script>
+
+  const locale = window.navigator.userLanguage || window.navigator.language;
+  moment.locale(locale);
+
+  function capitalize(word) {
+    return `${word.slice(0, 1).toUpperCase()}${word.slice(1, word.length).toLowerCase()}`;
+  }
 
   function RowsBuffer(columnsDefinition) {
     const rows = new Map();
@@ -182,9 +190,10 @@
         const bpriceDecimal = lCurPriceDecimal.mul(quantity || 0);
         const pnlDecimal = new Decimal(pnl);
         const plpercent = pnlDecimal.mul(100).div(bpriceDecimal);
+        const [day, month, year] = moment(create_at).format('D-MMMM-YY').split('-');
         const row = {
           SECID: secid,
-          DATE: create_at,
+          DATE: `${day}-${capitalize(month)}-${year}`,
           BOARDID: boardid,
           LOW: low,
           HIGH: high,
@@ -215,13 +224,13 @@
 
         for (const row of buf) {
           const id = rowsBuffer.getKey(row);
-          // SECID,BOARDID,BID,BIDDEPTH,OFFER,OFFERDEPTH,SPREAD,BIDDEPTHT,OFFERDEPTHT,OPEN,LOW,HIGH,LAST,LASTCHANGE,LASTCHANGEPRCNT,QTY,VALUE,VALUE_USD,WAPRICE,LASTCNGTOLASTWAPRICE,WAPTOPREVWAPRICEPRCNT,WAPTOPREVWAPRICE,CLOSEPRICE,MARKETPRICETODAY,MARKETPRICE,LASTTOPREVPRICE,NUMTRADES,VOLTODAY,VALTODAY,VALTODAY_USD,ETFSETTLEPRICE,TRADINGSTATUS,UPDATETIME,ADMITTEDQUOTE,LASTBID,LASTOFFER,LCLOSEPRICE,
-          // LCURRENTPRICE,MARKETPRICE2,NUMBIDS,NUMOFFERS,CHANGE,TIME,HIGHBID,LOWOFFER,PRICEMINUSPREVWAPRICE,OPENPERIODPRICE,SEQNUM,SYSTIME,CLOSINGAUCTIONPRICE,CLOSINGAUCTIONVOLUME,ISSUECAPITALIZATION,ISSUECAPITALIZATION_UPDATETIME,ETFSETTLECURRENCY,VALTODAY_RUR,SHORTNAME,PREVPRICE,LOTSIZE,FACEVALUE,STATUS,BOARDNAME,DECIMALS,SECNAME,REMARKS,MARKETCODE,INSTRID,SECTORID,MINSTEP,PREVWAPRICE,FACEUNIT,PREVDATE,ISSUESIZE,ISIN,LATNAME,REGNUMBER,PREVLEGALCLOSEPRICE,PREVADMITTEDQUOTE,CURRENCYID,SECTYPE,LISTLEVEL,SETTLEDATE
-          const { YIELD, LCURRENTPRICE } = row;
+          const { YIELD } = row;
           const rowsArray = rowsBuffer.get(id);
+          const LCURRENTPRICE = row.LCURRENTPRICE || row.WAPRICE;
 
           const updateRows = rowsArray.map(bufRow => {
             bufRow.LCURRENTPRICE = LCURRENTPRICE;
+
             // bufRow.DEALPRICE - цена покупки
             if (bufRow.TYPE === 'buy') {
               const lcurrentprice = new Decimal(LCURRENTPRICE || 0);
@@ -258,7 +267,7 @@
           {
             PL: totals.PL.toString(),
             BPRICE: totals.BPRICE.toString(),
-            PLPERCENT_SHOW: totals.PLPERCENT.toString(),
+            PLPERCENT_SHOW: totals.PLPERCENT.div(sortedRowsArray.length).toFixed(2),
           }
         );
       });
