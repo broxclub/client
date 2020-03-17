@@ -210,7 +210,7 @@
       const subscription = {};
       for (const sec of securities) {
         const {
-          board: boardid, secid, create_at, type, low, high, last, value, closeprice, marketprice, voltoday,
+          board: boardid, secid, secname, create_at, type, low, high, last, value, closeprice, marketprice, voltoday,
           lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity, buyprice, pnl
         } = sec;
         if (!subscription[boardid]) {
@@ -224,6 +224,7 @@
         const [day, month, year] = moment(create_at).format('D-MMMM-YY').split('-');
         const row = {
           SECID: secid,
+          SECNAME: secname,
           DATE: `${day}-${capitalize(month)}-${year}`,
           BOARDID: boardid,
           LOW: low,
@@ -317,9 +318,10 @@
     }
   }
 
+  const isLocalhost = document.domain === 'localhost';
 
-  StockLib.run(document.domain === 'localhost' ? 'development' :  'production').then(() => {
-    const stockClient = new StockLib.Client('https://api.brox.club:1313');
+  StockLib.run(isLocalhost ? 'development' :  'production').then(() => {
+    const stockClient = new StockLib.Client(isLocalhost ? 'https://test.brox.club:1313' : 'https://api.brox.club:1313');
 
     stockClient.connect().then(() => {
 
@@ -363,6 +365,7 @@
           }
         },
         {id: 'SECID', key: true, caption: 'Тикер', className: 'security', style: {width: '170px'}},
+        {id: 'SECNAME', caption: 'Наименование', style: {width: '170px'}},
         {id: 'TYPE_SHOW', caption: 'Тип сделки', style: {width: '100px'}},
         {id: 'DATE', caption: 'Дата сделки', style: {width: '150px'}},
         {id: 'QUANTITY', caption: 'Кол-во бумаг в портфеле', style: {width: '170px'}},
