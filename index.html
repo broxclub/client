@@ -185,7 +185,7 @@
     return Array.from(map.values());
   }
 
-  function TableSubscription(stockClient, tabHolder, columns, portfolioId) {
+  function TableSubscription(stockClient, tabHolder, columns, portfolio) {
     // String sort function
     const sortFunc = (rows) => {
       return rows.sort((a, b) => {
@@ -202,10 +202,7 @@
       console.log('[[onCellClick]]', e);
     });*/
 
-    const captions = [, 'Базовый', 'Рискованный', 'Консервативный'];
-    const caption = captions[portfolioId];
-
-    stockClient.listPortfolios(portfolioId).then(securities => {
+    stockClient.listPortfolios(portfolio.id).then(securities => {
       const rowsBuffer = new RowsBuffer(columns);
       const subscription = {};
       for (const sec of securities) {
@@ -300,7 +297,7 @@
 
         stockTable.render(
           rowsCollapser(sortedRowsArray),
-          caption,
+          portfolio.name,
           {
             PL: totals.PL.toString(),
             BPRICE: totals.BPRICE.toString(),
@@ -389,12 +386,28 @@
         {id: 'PLPERCENT', hidden: true}
       ];
 
-      const tabHolder = document.getElementById('tabHolder');
-      const tabHolder1 = document.getElementById('tabHolder1');
-      const tabHolder2 = document.getElementById('tabHolder2');
-      const subscription1 = new TableSubscription(stockClient, tabHolder, columns, 1);
-      const subscription2 = new TableSubscription(stockClient, tabHolder1, columns, 2);
-      const subscription3 = new TableSubscription(stockClient, tabHolder2, columns, 3);
+      // const tabHolder = document.getElementById('tabHolder');
+      // const tabHolder1 = document.getElementById('tabHolder1');
+      // const tabHolder2 = document.getElementById('tabHolder2');
+      // const subscription1 = new TableSubscription(stockClient, tabHolder, columns, 1);
+      // const subscription2 = new TableSubscription(stockClient, tabHolder1, columns, 2);
+      // const subscription3 = new TableSubscription(stockClient, tabHolder2, columns, 3);
+
+      stockClient.listPortfolios().then(response => {
+        const tabHolders = {
+          1: document.getElementById('tabHolder'),
+          2: document.getElementById('tabHolder1'),
+          3: document.getElementById('tabHolder2')
+        };
+
+        for (const portfolio of response) {
+          const { id, name, create_at, update_at } = portfolio;
+          if (tabHolders[id]) {
+            const subscription = new TableSubscription(stockClient, tabHolders[id], columns, portfolio);
+          }
+        }
+        // console.log(response);
+      }).catch(e => console.error(e));
 
     });
 
