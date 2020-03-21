@@ -19,7 +19,9 @@
       border-left: 1px solid #666;
     }
 
-    .stock-table-caption {
+    .stock-table-caption-header {
+      display: flex;
+      justify-content: space-between;
       font-weight: bold;
       border-top: 1px solid #666;
       padding: 4px;
@@ -298,6 +300,7 @@
         stockTable.render(
           rowsCollapser(sortedRowsArray),
           portfolio.name,
+          `Свободные средства: ${portfolio.balance}`,
           {
             PL: totals.PL.toString(),
             BPRICE: totals.BPRICE.toString(),
@@ -401,7 +404,7 @@
         };
 
         for (const portfolio of response) {
-          const { id, name, create_at, update_at } = portfolio;
+          const { id, name, create_at, update_at, balance } = portfolio;
           if (tabHolders[id]) {
             const subscription = new TableSubscription(stockClient, tabHolders[id], columns, portfolio);
           }
