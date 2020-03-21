@@ -21,6 +21,36 @@ const StockLib = (() => {
       });
     };
 
+    const postRequest = (url, body) => {
+      return new Promise((resolve, reject) => {
+        const ax = new XMLHttpRequest();
+        ax.open('POST', url, true);
+        ax.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+        ax.onreadystatechange = () => {
+          if (ax.readyState === 4) {
+            if (ax.status >= 200 && ax.status < 400) {
+              resolve(JSON.parse(ax.response));
+            } else {
+              reject(JSON.parse(ax.response));
+            }
+          }
+        };
+        ax.send(JSON.stringify(body));
+        /*fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+          },
+          credentials: 'include',
+          redirect: 'follow',
+          body: JSON.stringify(body),
+        }).then(response => response.json().then(resolve).catch(reject))
+          .catch(reject);*/
+      });
+    };
+
     const STOCKS = 'stocks';
 
     function StockClient(url) {
@@ -40,6 +70,10 @@ const StockLib = (() => {
       const apiRequest = (url, params) => {
         return getRequest(`${apiUrl}${url}`, params);
       };
+
+      const postApiRequest = (url, data) => {
+        return postRequest(`${apiUrl}${url}`, data);
+      }
 
       const wsSend = (commandId, command, props) => {
         ws.send(JSON.stringify(props ? [commandId, command, props] : [commandId, command]));
@@ -130,6 +164,13 @@ const StockLib = (() => {
           }).catch(reject);
         });
       };
+
+      this.sellSecurity = (data) => {
+        return new Promise((resolve, reject) => {
+          postApiRequest(`/store/sell`, data).then(resolve)
+            .catch(reject);
+        });
+      }
     }
 
     return StockClient;

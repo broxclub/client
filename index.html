@@ -111,6 +111,9 @@
 <div class="portfolio-table">
   <div id="tabHolder2" class="portfolio-table-content"></div>
 </div>
+<div class="portfolio-table">
+  <div id="tabHolder3" class="portfolio-table-content"></div>
+</div>
 
 <script>
 
@@ -396,11 +399,22 @@
       // const subscription2 = new TableSubscription(stockClient, tabHolder1, columns, 2);
       // const subscription3 = new TableSubscription(stockClient, tabHolder2, columns, 3);
 
+      /*stockClient.sellSecurity({
+        portfolioId: 1,
+        secid: 'SNGSP',
+        board: 'TQBR',
+        quantity: 1,
+        price: 100
+      }).then(response => {
+        console.log('response: ', response);
+      });*/
+
       stockClient.listPortfolios().then(response => {
         const tabHolders = {
           1: document.getElementById('tabHolder'),
           2: document.getElementById('tabHolder1'),
-          3: document.getElementById('tabHolder2')
+          3: document.getElementById('tabHolder2'),
+          4: document.getElementById('tabHolder3'),
         };
 
         for (const portfolio of response) {
