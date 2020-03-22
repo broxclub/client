@@ -331,7 +331,7 @@
   const isLocalhost = document.domain === 'localhost';
 
   StockLib.run(isLocalhost ? 'development' :  'production').then(() => {
-    const stockClient = new StockLib.Client(isLocalhost ? 'http://localhost:1313' : 'https://api.brox.club:1313');
+    const stockClient = new StockLib.Client(isLocalhost ? 'http://localhost:1313' : 'https://api.brox.club');
 
     stockClient.connect().then(() => {
 
