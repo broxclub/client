@@ -157,6 +157,14 @@ const StockLib = (() => {
         });
       };
 
+      const checkRequired = (data) => {
+        Object.keys(data).map(key => {
+          if (!data[key]) {
+            throw new Error(`Required parameter ${key} undefined`);
+          }
+        });
+      };
+
       this.listPortfolios = (portfolioId) => {
         return new Promise((resolve, reject) => {
           apiRequest(`/store/portfolio${portfolioId ? `/${portfolioId}` : ''}`).then(response => {
@@ -165,12 +173,17 @@ const StockLib = (() => {
         });
       };
 
-      this.sellSecurity = (data) => {
-        return new Promise((resolve, reject) => {
-          postApiRequest(`/store/sell`, data).then(resolve)
-            .catch(reject);
-        });
-      }
+      this.sellSecurity = ({secid, quantity, price}) => {
+        const data = {secid, quantity, price};
+        checkRequired(data);
+        return postApiRequest(`/store/sell`, data);
+      };
+
+      this.buySecurity = ({portfolioid, secid, board, quantity}) => {
+        const data = {portfolioid, secid, board, quantity};
+        checkRequired(data);
+        return postApiRequest(`/store/buy`, data);
+      };
     }
 
     return StockClient;

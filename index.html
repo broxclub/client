@@ -103,6 +103,10 @@
 <body>
 
 <div class="portfolio-table">
+  <div class="portfolio-table-actions">
+    <button id="buy-tab-1"></button>
+    <button id="sell-tab-1"></button>
+  </div>
   <div id="tabHolder" class="portfolio-table-content"></div>
 </div>
 <div class="portfolio-table">
@@ -207,124 +211,127 @@
       console.log('[[onCellClick]]', e);
     });*/
 
-    stockClient.listPortfolios(portfolio.id).then(securities => {
-      const rowsBuffer = new RowsBuffer(columns);
-      const subscription = {};
-      for (const sec of securities) {
-        const {
-          board: boardid, secid, secname, create_at, type, low, high, last, value, closeprice, marketprice, voltoday,
-          lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity, buyprice, pnl
-        } = sec;
-        if (!subscription[boardid]) {
-          subscription[boardid] = [];
-        }
-        const lCurPriceDecimal = new Decimal(lcurrentprice || 0);
-        const isBuy = type.toLowerCase() === 'buy';
-        const bpriceDecimal = lCurPriceDecimal.mul(quantity || 0);
-        const pnlDecimal = new Decimal(pnl);
-        const plpercent = pnlDecimal.mul(100).div(bpriceDecimal);
-        const [day, month, year] = moment(create_at).format('D-MMMM-YY').split('-');
-        const row = {
-          SECID: secid,
-          SECNAME: secname,
-          DATE: `${day}-${capitalize(month)}-${year}`,
-          BOARDID: boardid,
-          LOW: low,
-          HIGH: high,
-          MARKETPRICE: marketprice,
-          VOLTODAY: voltoday,
-          DEALPRICE_SHOW: lcurrentprice > 0 ? lcurrentprice : `-${lcurrentprice}`,
-          TYPE_SHOW: isBuy ? 'Покупка' : 'Продажа',
-          QUANTITY: quantity,
-          YIELD: sec['yield'],
-          BPRICE: `${isBuy ? bpriceDecimal.toString() : '0'}`,
-          DEALPRICE: lCurPriceDecimal.toNumber(),
-          BUYPRICE: buyprice,
-          TYPE: type,
-          PL: pnl,
-          PLPERCENT_SHOW: `${plpercent.toString()}`,
-          PLPERCENT: plpercent.toFixed(2),
-          LCURRENTPRICE: '',
-        };
+    const update = () => {
+      stockClient.listPortfolios(portfolio.id).then(securities => {
+        const rowsBuffer = new RowsBuffer(columns);
+        const subscription = {};
+        for (const sec of securities) {
+          const {
+            board: boardid, secid, secname, create_at, type, low, high, last, value, closeprice, marketprice, voltoday,
+            lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity, buyprice, pnl
+          } = sec;
+          if (!subscription[boardid]) {
+            subscription[boardid] = [];
+          }
+          const lCurPriceDecimal = new Decimal(lcurrentprice || 0);
+          const isBuy = type.toLowerCase() === 'buy';
+          const bpriceDecimal = lCurPriceDecimal.mul(quantity || 0);
+          const pnlDecimal = new Decimal(pnl);
+          const plpercent = pnlDecimal.mul(100).div(bpriceDecimal);
+          const [day, month, year] = moment(create_at).format('D-MMMM-YY').split('-');
+          const row = {
+            SECID: secid,
+            SECNAME: secname,
+            DATE: `${day}-${capitalize(month)}-${year}`,
+            BOARDID: boardid,
+            LOW: low,
+            HIGH: high,
+            MARKETPRICE: marketprice,
+            VOLTODAY: voltoday,
+            DEALPRICE_SHOW: lcurrentprice > 0 ? lcurrentprice : `-${lcurrentprice}`,
+            TYPE_SHOW: isBuy ? 'Покупка' : 'Продажа',
+            QUANTITY: quantity,
+            YIELD: sec['yield'],
+            BPRICE: `${isBuy ? bpriceDecimal.toString() : '0'}`,
+            DEALPRICE: lCurPriceDecimal.toNumber(),
+            BUYPRICE: buyprice,
+            TYPE: type,
+            PL: pnl,
+            PLPERCENT_SHOW: `${plpercent.toString()}`,
+            PLPERCENT: plpercent.toFixed(2),
+            LCURRENTPRICE: '',
+          };
 
-        const id = rowsBuffer.getKey(row);
-        const rowsArray = rowsBuffer.get(id) || [];
-        rowsArray.push(row);
-        rowsBuffer.update(id, rowsArray);
-        subscription[boardid].push(secid);
-      }
-
-      const invocationId = stockClient.subscribeMarkets(subscription, buf => {
-
-        for (const row of buf) {
           const id = rowsBuffer.getKey(row);
-          const { YIELD } = row;
-          const rowsArray = rowsBuffer.get(id);
-          const LCURRENTPRICE = row.LCURRENTPRICE || row.WAPRICE;
+          const rowsArray = rowsBuffer.get(id) || [];
+          rowsArray.push(row);
+          rowsBuffer.update(id, rowsArray);
+          subscription[boardid].push(secid);
+        }
 
-          const updateRows = rowsArray.map(bufRow => {
-            bufRow.LCURRENTPRICE = LCURRENTPRICE;
+        const invocationId = stockClient.subscribeMarkets(subscription, buf => {
 
-            // bufRow.DEALPRICE - цена покупки
-            if (bufRow.TYPE === 'buy') {
-              const lcurrentprice = new Decimal(LCURRENTPRICE || 0);
-              const pl = lcurrentprice.minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY);
-              const plpercent = pl.mul(100).div(bufRow.BPRICE);
-              bufRow.BPRICE = lcurrentprice.mul(bufRow.QUANTITY).toNumber();
-              bufRow.PL = pl.toString();
-              bufRow.PLPERCENT_SHOW = `${plpercent.toFixed(2)} %`;
-              bufRow.PLPERCENT = plpercent.toFixed(2);
-              // PL * 100 / BPRICE
-            }
-            bufRow.YIELD = YIELD;
+          for (const row of buf) {
+            const id = rowsBuffer.getKey(row);
+            const { YIELD } = row;
+            const rowsArray = rowsBuffer.get(id);
+            const LCURRENTPRICE = row.LCURRENTPRICE || row.WAPRICE;
 
-            return bufRow;
+            const updateRows = rowsArray.map(bufRow => {
+              bufRow.LCURRENTPRICE = LCURRENTPRICE;
+
+              // bufRow.DEALPRICE - цена покупки
+              if (bufRow.TYPE === 'buy') {
+                const lcurrentprice = new Decimal(LCURRENTPRICE || 0);
+                const pl = lcurrentprice.minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY);
+                const plpercent = pl.mul(100).div(bufRow.BPRICE);
+                bufRow.BPRICE = lcurrentprice.mul(bufRow.QUANTITY).toNumber();
+                bufRow.PL = pl.toString();
+                bufRow.PLPERCENT_SHOW = `${plpercent.toFixed(2)} %`;
+                bufRow.PLPERCENT = plpercent.toFixed(2);
+                // PL * 100 / BPRICE
+              }
+              bufRow.YIELD = YIELD;
+
+              return bufRow;
+            });
+
+            rowsBuffer.update(id, updateRows);
+          }
+
+          const sortedRowsArray = sortFunc(rowsBuffer.asArray());
+          const totals = {
+            PL: new Decimal(0),
+            BPRICE: new Decimal(0),
+            PLPERCENT: new Decimal(0),
+          };
+          sortedRowsArray.map(row => {
+            totals.PL = totals.PL.add(row.PL);
+            totals.BPRICE = totals.BPRICE.add(row.BPRICE);
+            totals.PLPERCENT = totals.PLPERCENT.add(row.PLPERCENT);
           });
 
-          rowsBuffer.update(id, updateRows);
-        }
+          // 1: PL
+          // 2: BPRICE
+          // 3: PLPERCENT_SHOW
 
-        const sortedRowsArray = sortFunc(rowsBuffer.asArray());
-        const totals = {
-          PL: new Decimal(0),
-          BPRICE: new Decimal(0),
-          PLPERCENT: new Decimal(0),
-        };
-        sortedRowsArray.map(row => {
-          totals.PL = totals.PL.add(row.PL);
-          totals.BPRICE = totals.BPRICE.add(row.BPRICE);
-          totals.PLPERCENT = totals.PLPERCENT.add(row.PLPERCENT);
+          stockTable.render(
+            rowsCollapser(sortedRowsArray),
+            portfolio.name,
+            `Свободные средства: ${portfolio.balance}`,
+            {
+              PL: totals.PL.toString(),
+              BPRICE: totals.BPRICE.toString(),
+              PLPERCENT_SHOW: totals.PL.mul(100).div(totals.BPRICE).toFixed(2),
+            }
+          );
         });
+      }).catch(e => console.error(e));
+    };
 
-        // 1: PL
-        // 2: BPRICE
-        // 3: PLPERCENT_SHOW
-
-        stockTable.render(
-          rowsCollapser(sortedRowsArray),
-          portfolio.name,
-          `Свободные средства: ${portfolio.balance}`,
-          {
-            PL: totals.PL.toString(),
-            BPRICE: totals.BPRICE.toString(),
-            PLPERCENT_SHOW: totals.PL.mul(100).div(totals.BPRICE).toFixed(2),
-          }
-        );
-      });
-    }).catch(e => console.error(e));
+    update();
 
     return {
-      // incocationId,
-      /*unsubscribe: () => {
-        stockClient.unsubscribe(invocationId);
-      }*/
+      refresh: () => {
+        update();
+      }
     }
   }
 
   const isLocalhost = document.domain === 'localhost';
 
   StockLib.run(isLocalhost ? 'development' :  'production').then(() => {
-    const stockClient = new StockLib.Client(isLocalhost ? 'https://test.brox.club:1313' : 'https://api.brox.club:1313');
+    const stockClient = new StockLib.Client(isLocalhost ? 'http://localhost:1313' : 'https://api.brox.club:1313');
 
     stockClient.connect().then(() => {
 
@@ -392,20 +399,35 @@
         {id: 'PLPERCENT', hidden: true}
       ];
 
-      // const tabHolder = document.getElementById('tabHolder');
-      // const tabHolder1 = document.getElementById('tabHolder1');
-      // const tabHolder2 = document.getElementById('tabHolder2');
-      // const subscription1 = new TableSubscription(stockClient, tabHolder, columns, 1);
-      // const subscription2 = new TableSubscription(stockClient, tabHolder1, columns, 2);
-      // const subscription3 = new TableSubscription(stockClient, tabHolder2, columns, 3);
+      const subscriptions = {};
 
-      /*stockClient.sellSecurity({
-        secid: 11,
-        quantity: 8,
-        price: 100
-      }).then(response => {
-        console.log('response: ', response);
-      });*/
+      const buyButton = document.getElementById("buy-tab-1");
+      buyButton.innerHTML = "Buy 1 EUR_RUB__TOD";
+      buyButton.onclick = () => {
+        stockClient.buySecurity({
+          portfolioid: 1,
+          secid: 'EUR_RUB__TOD',
+          board: 'CETS',
+          quantity: 1,
+        }).then(response => {
+          console.log('Buy success', response);
+          subscriptions[1].refresh();
+        }).catch(e => console.error(e));
+      };
+
+      const sellButton = document.getElementById("sell-tab-1");
+      sellButton.innerHTML = "Sell 1 EUR_RUB__TOD";
+      sellButton.onclick = () => {
+        stockClient.buySecurity({
+          portfolioid: 1,
+          secid: 'EUR_RUB__TOD',
+          board: 'CETS',
+          quantity: 1,
+        }).then(response => {
+          console.log('Buy success', response);
+          subscriptions[1].refresh();
+        }).catch(e => console.error(e));
+      };
 
       stockClient.listPortfolios().then(response => {
         const tabHolders = {
@@ -418,7 +440,7 @@
         for (const portfolio of response) {
           const { id, name, create_at, update_at, balance } = portfolio;
           if (tabHolders[id]) {
-            const subscription = new TableSubscription(stockClient, tabHolders[id], columns, portfolio);
+            subscriptions[id] = new TableSubscription(stockClient, tabHolders[id], columns, portfolio);
           }
         }
         // console.log(response);
