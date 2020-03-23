@@ -313,8 +313,14 @@
             `Свободные средства: ${portfolio.balance}`,
             {
               PL: totals.PL.toString(),
-              BPRICE: totals.BPRICE.toString(),
-              PLPERCENT_SHOW: totals.PL.mul(100).div(totals.BPRICE).div(totals.BPRICE - totals.PL).toFixed(2),
+              BPRICE:
+                totals.BPRICE
+                  .add(portfolio.balance)
+                  .mul(100)
+                  .div(portfolio.start_balance)
+                  .minus(100)
+                  .toFixed(2),
+              PLPERCENT_SHOW: totals.PL.mul(100).div(totals.BPRICE.minus(totals.PL).plus(portfolio.balance)).toFixed(2),
             }
           );
         });
