@@ -73,7 +73,7 @@ const StockLib = (() => {
 
       const postApiRequest = (url, data) => {
         return postRequest(`${apiUrl}${url}`, data);
-      }
+      };
 
       const wsSend = (commandId, command, props) => {
         ws.send(JSON.stringify(props ? [commandId, command, props] : [commandId, command]));
@@ -173,8 +173,8 @@ const StockLib = (() => {
         });
       };
 
-      this.sellSecurity = ({secid, quantity, price}) => {
-        const data = {secid, quantity, price};
+      this.sellSecurity = ({portfolioid, secid, board, quantity, price}) => {
+        const data = {portfolioid, secid, board, quantity, price};
         checkRequired(data);
         return postApiRequest(`/store/sell`, data);
       };

@@ -105,7 +105,6 @@
 <div class="portfolio-table">
   <div class="portfolio-table-actions">
     <button id="buy-tab-1"></button>
-    <button id="sell-tab-1"></button>
   </div>
   <div id="tabHolder" class="portfolio-table-content"></div>
 </div>
@@ -217,8 +216,9 @@
         const subscription = {};
         for (const sec of securities) {
           const {
-            board: boardid, secid, secname, create_at, type, low, high, last, value, closeprice, marketprice, voltoday,
-            lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity, buyprice, pnl
+            board: boardid, secid, secname, create_at, type, low, high, last, value, closeprice, marketprice,
+            voltoday, lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity,
+            buyprice, pnl
           } = sec;
           if (!subscription[boardid]) {
             subscription[boardid] = [];
@@ -230,6 +230,8 @@
           const plpercent = pnlDecimal.mul(100).div(bpriceDecimal);
           const [day, month, year] = moment(create_at).format('D-MMMM-YY').split('-');
           const row = {
+            id: sec.id,
+            portfolioId: portfolio.id,
             SECID: secid,
             SECNAME: secname,
             DATE: `${day}-${capitalize(month)}-${year}`,
@@ -380,12 +382,40 @@
         {id: 'DATE', caption: 'Дата сделки', style: {width: '150px'}},
         {id: 'QUANTITY', caption: 'Кол-во бумаг в портфеле', style: {width: '170px'}},
 
-        {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}},
-        {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}},
-        {id: 'PL', caption: 'Прибыль/убыток', style: {width: '150px'}},
+        // {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}},
+        // {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}},
+        // {id: 'PL', caption: 'Прибыль/убыток', style: {width: '150px'}},
 
         {id: 'PLPERCENT_SHOW', caption: '%', style: {width: '100px'}},
         {id: 'BPRICE', caption: 'Цена бумаг в портфеле', style: { width: '170px'}},
+
+        {id: 'ACTIONS', caption: 'Действия', style: {width: '150px'},
+          renderCell: (col, row, rowIndex, className) => {
+            return React.createElement('div', {
+              className,
+              style: col.style,
+              key: `actions-${rowIndex}`
+            },
+            [
+              React.createElement('button', {
+                key: `actions-${rowIndex}-sell`,
+                style: {backgroundColor: row.SECID === 'RTKM' ? '#f99' : 'auto'},
+                onClick: () => {
+                  stockClient.sellSecurity({
+                    portfolioid: row.portfolioId,
+                    board: row.BOARDID,
+                    secid: row.SECID,
+                    quantity: 2,
+                    price: 100,
+                  }).then(response => {
+                    console.log('Sell success', response);
+                    subscriptions[1].refresh();
+                  }).catch(e => console.error(e));
+                },
+              }, 'sell 1 by 100'),
+            ]);
+          }
+        },
 
         // {id: 'LOW', caption: 'Мин. цена', style: {width: '100px'}},
         // {id: 'HIGH', caption: 'Макс. цена', style: {width: '100px'}},
@@ -415,10 +445,10 @@
         }).catch(e => console.error(e));
       };
 
-      const sellButton = document.getElementById("sell-tab-1");
+      /*const sellButton = document.getElementById("sell-tab-1");
       sellButton.innerHTML = "Sell 1 EUR_RUB__TOD";
       sellButton.onclick = () => {
-        stockClient.buySecurity({
+        stockClient.sellSecurity({
           portfolioid: 1,
           secid: 'EUR_RUB__TOD',
           board: 'CETS',
@@ -427,7 +457,7 @@
           console.log('Buy success', response);
           subscriptions[1].refresh();
         }).catch(e => console.error(e));
-      };
+      };*/
 
       stockClient.listPortfolios().then(response => {
         const tabHolders = {
