@@ -271,13 +271,14 @@ const StockLib = (() => {
             visibleColumns.map((col, index) => {
               const style = col.style || {};
               const text = col.id in totals ? totals[col.id] : undefined;
+              const className = `${baseClassName}-footer-cell ${text ? `${baseClassName}-footer-cell-filled ` : ''}${baseClassName}-footer-cell-${col.id}`;
 
-              return col.renderFooterCell ? col.renderFooterCell(col) :
+              return col.renderFooterCell ? col.renderFooterCell.call(this, col, className, baseClassName) :
                 e(
                   'div',
                   {
                     key: index,
-                    className: `${baseClassName}-footer-cell ${text ? `${baseClassName}-footer-cell-filled ` : ''}${baseClassName}-footer-cell-${col.id}`,
+                    className,
                     style,
                     onClick: onFooterCellClick.bind(this, col.id),
                   },

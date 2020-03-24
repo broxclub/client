@@ -113,6 +113,14 @@
       word-break: break-all;
     }
 
+    .stock-table-footer-cell-positive {
+      color: #3ede0d;
+    }
+
+    .stock-table-footer-cell-negative {
+      color: #de3716;
+    }
+
     .stock-table-footer-cell-PL,
     .stock-table-footer-cell-PLPERCENT_SHOW,
     .stock-table-footer-cell-BPRICE {
@@ -438,6 +446,23 @@
         );
       }
 
+      function renderFooterPosNegCell(col, className, baseClassName) {
+        const { totals, onFooterCellClick } = this.props;
+        const style = col.style || {};
+        const text = col.id in totals ? totals[col.id] : undefined;
+        const value = new Decimal(text || 0);
+        return React.createElement(
+          'div',
+          {
+            key: col.id,
+            className: `${className} ${baseClassName}-footer-cell-${value.isNegative() ? 'negative' : 'positive'}`,
+            style,
+            onClick: onFooterCellClick.bind(this, col.id),
+          },
+          text
+        );
+      }
+
       const columns = [
         // {
         //  id: 'SECID', // ID for each column
@@ -500,11 +525,14 @@
         {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}, renderHeaderCell},
         {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}, renderHeaderCell},
         {id: 'PL', caption: 'Прибыль/убыток', style: {width: '150px'}, renderHeaderCell,
-          renderCell: renderPosNegCell
+          renderCell: renderPosNegCell,
+          renderFooterCell: renderFooterPosNegCell,
         },
 
         {id: 'PLPERCENT_SHOW', caption: '%', style: {width: '100px'}, renderHeaderCell,
-          renderCell: renderPosNegCell, valueColId: 'PLPERCENT',
+          valueColId: 'PLPERCENT',
+          renderCell: renderPosNegCell,
+          renderFooterCell: renderFooterPosNegCell,
         },
         {id: 'BPRICE', caption: 'Цена бумаг в портфеле', style: { width: '170px'}, renderHeaderCell},
 
