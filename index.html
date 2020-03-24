@@ -5,6 +5,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
   <script type="text/javascript" src="./stocklib.js"></script>
   <style>
+    body {
+      font-size: 12px;
+    }
+
     div {
       box-sizing: border-box;
       -moz-box-sizing: border-box;
@@ -33,10 +37,24 @@
       border-top: 1px solid #666;
     }
 
+    .stock-table-header-cell-caption {
+      font-weight: bold;
+    }
+
+    .stock-table-header-cell-id {
+      font-size: 9px;
+    }
+
     .stock-table-header-cell {
       display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       padding: 4px;
       border-collapse: collapse;
+      font-size: 12px;
+      white-space: normal;
+      word-break: break-all;
     }
 
     .stock-table-header-cell:not(:last-child) {
@@ -58,6 +76,14 @@
       padding: 4px;
       white-space: normal;
       word-break: break-all;
+    }
+
+    .stock-table-row-cell-positive {
+      color: #3ede0d;
+    }
+
+    .stock-table-row-cell-negative {
+      color: #de3716;
     }
 
     .stock-table-footer {
@@ -277,10 +303,14 @@
                 const lcurrentprice = new Decimal(LCURRENTPRICE || 0);
                 const pl = lcurrentprice.minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY);
                 const plpercent = pl.mul(100).div(bufRow.BPRICE);
+                const plpercentShow =
+                  new Decimal(100)
+                    .mul(pl)
+                    .div( new Decimal(bufRow.DEALPRICE).mul(bufRow.QUANTITY) );
+
                 bufRow.BPRICE = lcurrentprice.mul(bufRow.QUANTITY).toNumber();
                 bufRow.PL = pl.toString();
-                bufRow.PLPERCENT_SHOW = `${plpercent.toFixed(2)} %`;
-                bufRow.PLPERCENT = plpercent.toFixed(2);
+                bufRow.PLPERCENT_SHOW = `${plpercentShow.toFixed(2)} %`;
                 // PL * 100 / BPRICE
               }
               bufRow.YIELD = YIELD;
@@ -313,14 +343,14 @@
             `Свободные средства: ${portfolio.balance}`,
             {
               PL: totals.PL.toString(),
-              BPRICE:
+              BPRICE: totals.BPRICE.toString(),
+              PLPERCENT_SHOW:
                 totals.BPRICE
                   .add(portfolio.balance)
                   .mul(100)
                   .div(portfolio.start_balance)
                   .minus(100)
-                  .toFixed(2),
-              PLPERCENT_SHOW: totals.PL.mul(100).div(totals.BPRICE.minus(totals.PL).plus(portfolio.balance)).toFixed(2),
+                  .toFixed(2)
             }
           );
         });
@@ -357,6 +387,40 @@
       }).then(response => {
         console.log(response);
       }).catch(e => console.error(e));*/
+
+      function renderHeaderCell(col, className, baseClassName, index) {
+        const { onHeaderCellClick } = this.props;
+        const style = col.style || {};
+        return React.createElement(
+            'div',
+            {
+              key: index,
+              className,
+              style,
+              onClick: onHeaderCellClick.bind(this, col.id),
+            },
+            [
+              React.createElement('div', { key: 'caption', className: `${baseClassName}-header-cell-caption` }, col.caption),
+              React.createElement('div', { key: 'id', className: `${baseClassName}-header-cell-id` }, `(${col.id})`),
+            ],
+          )
+      }
+
+      function renderUpDownCell(col, row, rowIndex, className, baseClassName) {
+        const { onCellClick } = this.props;
+        const style = col.style || {};
+        const value = new Decimal(row[col.id] || 0);
+        return React.createElement(
+          'div',
+          {
+            key: `${rowIndex}-${col.id}`,
+            className: `${className} ${baseClassName}-row-cell-${value.isNegative() ? 'negative' : 'positive'}`,
+            style,
+            onClick: onCellClick.bind(this, {id: col.id, rownum: rowIndex}),
+          },
+          row[col.id]
+        );
+      }
 
       const columns = [
         // {
@@ -411,18 +475,22 @@
           }
         },
 
-        {id: 'SECID', key: true, caption: 'Тикер', className: 'security', style: {width: '170px'}},
-        {id: 'SECNAME', caption: 'Наименование', style: {width: '170px'}},
-        {id: 'TYPE_SHOW', caption: 'Тип сделки', style: {width: '100px'}},
-        {id: 'DATE', caption: 'Дата сделки', style: {width: '150px'}},
-        {id: 'QUANTITY', caption: 'Кол-во бумаг в портфеле', style: {width: '170px'}},
+        {id: 'SECID', key: true, caption: 'Тикер', className: 'security', style: {width: '170px'}, renderHeaderCell},
+        {id: 'SECNAME', caption: 'Наименование', style: {width: '170px'}, renderHeaderCell},
+        {id: 'TYPE_SHOW', caption: 'Тип сделки', style: {width: '100px'}, renderHeaderCell},
+        {id: 'DATE', caption: 'Дата сделки', style: {width: '150px'}, renderHeaderCell},
+        {id: 'QUANTITY', caption: 'Кол-во бумаг в портфеле', style: {width: '170px'}, renderHeaderCell},
 
-        {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}},
-        {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}},
-        {id: 'PL', caption: 'Прибыль/убыток', style: {width: '150px'}},
+        {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}, renderHeaderCell,
+          renderCell: renderUpDownCell
+        },
+        {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}, renderHeaderCell},
+        {id: 'PL', caption: 'Прибыль/убыток', style: {width: '150px'}, renderHeaderCell,
+          renderCell: renderUpDownCell
+        },
 
-        {id: 'PLPERCENT_SHOW', caption: '%', style: {width: '100px'}},
-        {id: 'BPRICE', caption: 'Цена бумаг в портфеле', style: { width: '170px'}},
+        {id: 'PLPERCENT_SHOW', caption: '%', style: {width: '100px'}, renderHeaderCell},
+        {id: 'BPRICE', caption: 'Цена бумаг в портфеле', style: { width: '170px'}, renderHeaderCell},
 
         // {id: 'LOW', caption: 'Мин. цена', style: {width: '100px'}},
         // {id: 'HIGH', caption: 'Макс. цена', style: {width: '100px'}},

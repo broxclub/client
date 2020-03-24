@@ -246,12 +246,13 @@ const StockLib = (() => {
             {key: 'header', className: `${baseClassName}-header`},
             visibleColumns.map((col, index) => {
                 const style = col.style || {};
-                return col.renderHeaderCell ? col.renderHeaderCell(col) :
+                const className = `${baseClassName}-header-cell ${baseClassName}-header-cell-${col.id}`;
+                return col.renderHeaderCell ? col.renderHeaderCell.call(this, col, className, baseClassName, index) :
                   e(
                     'div',
                     {
                       key: index,
-                      className: `${baseClassName}-header-cell ${baseClassName}-header-cell-${col.id}`,
+                      className,
                       style,
                       onClick: onHeaderCellClick.bind(this, col.id),
                     },
@@ -304,7 +305,7 @@ const StockLib = (() => {
               const className = `${baseClassName}-row-cell ${baseClassName}-row-cell-${col.id}`;
 
               return col.renderCell ?
-                col.renderCell(col, row, rowIndex, className) :
+                col.renderCell.call(this, col, row, rowIndex, className, baseClassName) :
                 e(
                   'div',
                   {
