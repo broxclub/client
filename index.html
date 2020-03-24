@@ -7,6 +7,9 @@
   <style>
     body {
       font-size: 12px;
+      font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+      background: #ECE9E0;
+      color: #656665;
     }
 
     div {
@@ -84,6 +87,15 @@
 
     .stock-table-row-cell-negative {
       color: #de3716;
+    }
+
+    .stock-table-row-cell-PL,
+    .stock-table-row-cell-BPRICE,
+    .stock-table-row-cell-LCURRENTPRICE,
+    .stock-table-row-cell-DEALPRICE_SHOW,
+    .stock-table-row-cell-QUANTITY,
+    .stock-table-row-cell-PLPERCENT_SHOW {
+      justify-content: flex-end;
     }
 
     .stock-table-footer {
@@ -311,6 +323,7 @@
                 bufRow.BPRICE = lcurrentprice.mul(bufRow.QUANTITY).toNumber();
                 bufRow.PL = pl.toString();
                 bufRow.PLPERCENT_SHOW = `${plpercentShow.toFixed(2)} %`;
+                bufRow.PLPERCENT = plpercentShow.toFixed(2);
                 // PL * 100 / BPRICE
               }
               bufRow.YIELD = YIELD;
@@ -406,10 +419,11 @@
           )
       }
 
-      function renderUpDownCell(col, row, rowIndex, className, baseClassName) {
+      function renderPosNegCell(col, row, rowIndex, className, baseClassName) {
         const { onCellClick } = this.props;
         const style = col.style || {};
-        const value = new Decimal(row[col.id] || 0);
+        const valueColId = col.valueColId || col.id;
+        const value = new Decimal(row[valueColId] || 0);
         return React.createElement(
           'div',
           {
@@ -476,20 +490,20 @@
         },
 
         {id: 'SECID', key: true, caption: 'Тикер', className: 'security', style: {width: '170px'}, renderHeaderCell},
-        {id: 'SECNAME', caption: 'Наименование', style: {width: '170px'}, renderHeaderCell},
+        {id: 'SECNAME', caption: 'Наименование', style: {width: '250px'}, renderHeaderCell},
         {id: 'TYPE_SHOW', caption: 'Тип сделки', style: {width: '100px'}, renderHeaderCell},
         {id: 'DATE', caption: 'Дата сделки', style: {width: '150px'}, renderHeaderCell},
         {id: 'QUANTITY', caption: 'Кол-во бумаг в портфеле', style: {width: '170px'}, renderHeaderCell},
 
-        {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}, renderHeaderCell,
-          renderCell: renderUpDownCell
-        },
+        {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}, renderHeaderCell},
         {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}, renderHeaderCell},
         {id: 'PL', caption: 'Прибыль/убыток', style: {width: '150px'}, renderHeaderCell,
-          renderCell: renderUpDownCell
+          renderCell: renderPosNegCell
         },
 
-        {id: 'PLPERCENT_SHOW', caption: '%', style: {width: '100px'}, renderHeaderCell},
+        {id: 'PLPERCENT_SHOW', caption: '%', style: {width: '100px'}, renderHeaderCell,
+          renderCell: renderPosNegCell, valueColId: 'PLPERCENT',
+        },
         {id: 'BPRICE', caption: 'Цена бумаг в портфеле', style: { width: '170px'}, renderHeaderCell},
 
         // {id: 'LOW', caption: 'Мин. цена', style: {width: '100px'}},
