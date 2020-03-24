@@ -422,10 +422,11 @@
               style,
               onClick: onHeaderCellClick.bind(this, col.id),
             },
-            [
+            React.createElement('div', { key: 'caption', className: `${baseClassName}-header-cell-caption` }, col.caption),
+            /*[
               React.createElement('div', { key: 'caption', className: `${baseClassName}-header-cell-caption` }, col.caption),
               React.createElement('div', { key: 'id', className: `${baseClassName}-header-cell-id` }, `(${col.id})`),
-            ],
+            ],*/
           )
       }
 
