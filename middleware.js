@@ -303,6 +303,7 @@ const StockLibMiddleware = (() => {
       }
     },
 
+    /*
     {id: 'ACTIONS', caption: 'Действия', style: {width: '120px'},
       renderCell: function (col, row, rowIndex, className) {
         const { stockClient, portfolioController } = this.props;
@@ -330,6 +331,7 @@ const StockLibMiddleware = (() => {
           ]);
       }
     },
+    */
 
     {id: 'SECID', key: true, caption: 'Тикер', className: 'security', style: {width: '170px'}, renderHeaderCell},
     {id: 'SECNAME', caption: 'Наименование', style: {width: '250px'}, renderHeaderCell},
