@@ -325,7 +325,7 @@ const StockLib = (() => {
       return {ReactStockTable};
     };
 
-    function StockTable(root, columns) {
+    function StockTable(root, columns, stockClient, portfolioController) {
       const handlers = {
         onHeaderCellClick: () => void 0,
         onFooterCellClick: () => void 0,
@@ -342,6 +342,8 @@ const StockLib = (() => {
           totals,
           caption,
           balance,
+          stockClient,
+          portfolioController,
           // rows: rowsBuffer.asArray(sortFunc),
           onHeaderCellClick: (e) => handlers.onHeaderCellClick(e),
           onFooterCellClick: (e) => handlers.onFooterCellClick(e),
