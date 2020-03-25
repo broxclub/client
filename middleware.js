@@ -289,7 +289,7 @@ const StockLibMiddleware = (() => {
     //  renderCell?: () => {}, // cell render callback (using if defined)
     //  renderHeaderCell?: () => {} // header cell render callback (using if defined)
     // }
-    {id: 'ICO', style: { width: '40px' },
+    {id: 'ICO',
       renderCell: (col, row, rowIndex, className) => {
         return React.createElement('div', {
             className,
@@ -333,25 +333,25 @@ const StockLibMiddleware = (() => {
     },
     */
 
-    {id: 'SECID', key: true, caption: 'Тикер', className: 'security', style: {width: '170px'}, renderHeaderCell},
-    {id: 'SECNAME', caption: 'Наименование', style: {width: '250px'}, renderHeaderCell},
-    {id: 'TYPE_SHOW', caption: 'Тип сделки', style: {width: '100px'}, renderHeaderCell},
-    {id: 'DATE', caption: 'Дата сделки', style: {width: '150px'}, renderHeaderCell},
-    {id: 'QUANTITY', caption: 'Кол-во бумаг в портфеле', style: {width: '170px'}, renderHeaderCell},
+    {id: 'SECID', key: true, caption: 'Тикер', className: 'security', renderHeaderCell},
+    {id: 'SECNAME', caption: 'Наименование', renderHeaderCell},
+    {id: 'TYPE_SHOW', caption: 'Тип сделки', renderHeaderCell},
+    {id: 'DATE', caption: 'Дата сделки', renderHeaderCell},
+    {id: 'QUANTITY', caption: 'Кол-во бумаг в портфеле', renderHeaderCell},
 
-    {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', style: {width: '100px'}, renderHeaderCell},
-    {id: 'LCURRENTPRICE', caption: 'Текущая цена', style: {width: '100px'}, renderHeaderCell},
-    {id: 'PL', caption: 'Прибыль/убыток', style: {width: '150px'}, renderHeaderCell,
+    {id: 'DEALPRICE_SHOW', caption: 'Цена сделки', renderHeaderCell},
+    {id: 'LCURRENTPRICE', caption: 'Текущая цена', renderHeaderCell},
+    {id: 'PL', caption: 'Прибыль/убыток', renderHeaderCell,
       renderCell: renderPosNegCell,
       renderFooterCell: renderFooterPosNegCell,
     },
 
-    {id: 'PLPERCENT_SHOW', caption: '%', style: {width: '100px'}, renderHeaderCell,
+    {id: 'PLPERCENT_SHOW', caption: '%', renderHeaderCell,
       valueColId: 'PLPERCENT',
       renderCell: renderPosNegCell,
       renderFooterCell: renderFooterPosNegCell,
     },
-    {id: 'BPRICE', caption: 'Цена бумаг в портфеле', style: { width: '170px'}, renderHeaderCell},
+    {id: 'BPRICE', caption: 'Цена бумаг в портфеле', renderHeaderCell},
 
     // {id: 'LOW', caption: 'Мин. цена', style: {width: '100px'}},
     // {id: 'HIGH', caption: 'Макс. цена', style: {width: '100px'}},

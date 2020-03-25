@@ -246,7 +246,7 @@ const StockLib = (() => {
             {key: 'header', className: `${baseClassName}-header`},
             visibleColumns.map((col, index) => {
                 const style = col.style || {};
-                const className = `${baseClassName}-header-cell ${baseClassName}-header-cell-${col.id}`;
+                const className = `${baseClassName}-header-cell ${baseClassName}-header-cell-${col.id} cell-${col.id}`;
                 return col.renderHeaderCell ? col.renderHeaderCell.call(this, col, className, baseClassName, index) :
                   e(
                     'div',
@@ -271,7 +271,7 @@ const StockLib = (() => {
             visibleColumns.map((col, index) => {
               const style = col.style || {};
               const text = col.id in totals ? totals[col.id] : undefined;
-              const className = `${baseClassName}-footer-cell ${text ? `${baseClassName}-footer-cell-filled ` : ''}${baseClassName}-footer-cell-${col.id}`;
+              const className = `${baseClassName}-footer-cell ${text ? `${baseClassName}-footer-cell-filled ` : ''} ${baseClassName}-footer-cell-${col.id} cell-${col.id}`;
 
               return col.renderFooterCell ? col.renderFooterCell.call(this, col, className, baseClassName) :
                 e(
@@ -303,7 +303,7 @@ const StockLib = (() => {
           const {onCellClick} = this.props;
           return columns.map((col, index) => {
               const style = col.style || {};
-              const className = `${baseClassName}-row-cell ${baseClassName}-row-cell-${col.id}`;
+              const className = `${baseClassName}-row-cell ${baseClassName}-row-cell-${col.id} cell-${col.id}`;
 
               return col.renderCell ?
                 col.renderCell.call(this, col, row, rowIndex, className, baseClassName) :
@@ -311,7 +311,7 @@ const StockLib = (() => {
                   'div',
                   {
                     key: index,
-                    className: `${baseClassName}-row-cell ${baseClassName}-row-cell-${col.id}`,
+                    className,
                     style,
                     onClick: onCellClick.bind(this, {id: col.id, rownum: rowIndex}),
                   },
