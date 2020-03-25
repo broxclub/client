@@ -335,7 +335,7 @@ const StockLibMiddleware = (() => {
 
     {id: 'SECID', key: true, caption: 'Тикер', className: 'security', renderHeaderCell},
     {id: 'SECNAME', caption: 'Наименование', renderHeaderCell},
-    {id: 'TYPE_SHOW', caption: 'Тип сделки', renderHeaderCell},
+    // {id: 'TYPE_SHOW', caption: 'Тип сделки', renderHeaderCell},
     {id: 'DATE', caption: 'Дата сделки', renderHeaderCell},
     {id: 'QUANTITY', caption: 'Кол-во бумаг в портфеле', renderHeaderCell},
 
