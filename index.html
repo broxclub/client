@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
   <script type="text/javascript" src="./stocklib.js"></script>
   <script type="text/javascript" src="./middleware.js"></script>
@@ -206,7 +208,6 @@
   StockLibMiddleware()
     .then(async (control) => {
       const portfolios = await control.listPortfolios();
-      console.log('portfolios: ', portfolios);
       const container = document.getElementById('portfolios');
 
       Object.values(portfolios).forEach(portfolio => {

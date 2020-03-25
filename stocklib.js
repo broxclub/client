@@ -62,8 +62,8 @@ const StockLib = (() => {
         }
         url = url.replace(/^https?\:/, '');
       }
-      const wsUrl = `ws${useSsl ? 's':''}://${url}`;
-      const apiUrl = rtrim(`http${useSsl ? 's':''}://${url}`);
+      const wsUrl = `ws${useSsl ? 's' : ''}://${url}`;
+      const apiUrl = rtrim(`http${useSsl ? 's' : ''}://${url}`);
 
       const channels = new Map();
 
@@ -146,7 +146,7 @@ const StockLib = (() => {
         });
       };
 
-      this.listSecurities = ({fields = [], filter}) => {
+      this.listSecurities = ({ fields = [], filter }) => {
         const props = [];
         Array.isArray(fields) && fields.length && props.push(`fields=${fields.join(',')}`);
         filter > '' && typeof filter === 'string' && props.push(`filter=${filter}`);
@@ -173,14 +173,14 @@ const StockLib = (() => {
         });
       };
 
-      this.sellSecurity = ({portfolioid, secid, board, quantity, price}) => {
-        const data = {portfolioid, secid, board, quantity, price};
+      this.sellSecurity = ({ portfolioid, secid, board, quantity, price }) => {
+        const data = { portfolioid, secid, board, quantity, price };
         checkRequired(data);
         return postApiRequest(`/store/sell`, data);
       };
 
-      this.buySecurity = ({portfolioid, secid, board, quantity}) => {
-        const data = {portfolioid, secid, board, quantity};
+      this.buySecurity = ({ portfolioid, secid, board, quantity }) => {
+        const data = { portfolioid, secid, board, quantity };
         checkRequired(data);
         return postApiRequest(`/store/buy`, data);
       };
@@ -190,34 +190,31 @@ const StockLib = (() => {
   })();
 
   const StockTable = (() => {
-
-    let invocationId;
     const baseClassName = 'stock-table';
 
     const initClasses = () => {
       const e = React.createElement;
 
       class ReactStockTable extends React.Component {
-        state = {
-          visibleColumns: [],
-          keys: [],
-        };
-
         constructor(props) {
           super(props);
+          this.state = {
+            visibleColumns: [],
+            keys: [],
+          };
         }
 
         componentDidMount() {
           const { columns } = this.props;
           this.setState({
             visibleColumns: columns.filter(col => !col.hidden),
-            keys: columns.filter(col => col.key)
+            keys: columns.filter(col => col.key),
           });
         }
 
         render() {
           return e('div', {
-            className: `${baseClassName}`
+            className: `${baseClassName}`,
           }, [
             this.props.caption && this._renderCaption(),
             this._renderHeader(),
@@ -230,11 +227,11 @@ const StockLib = (() => {
           const { caption, balance } = this.props;
           return e(
             'div',
-            {key: 'table-caption', className: `${baseClassName}-caption-header`},
+            { key: 'table-caption', className: `${baseClassName}-caption-header` },
             [
-              e('div', {key: 'text', className: `${baseClassName}-caption-text`}, caption),
-              e('div', {key: 'balance', className: `${baseClassName}-caption-balance`}, balance)
-            ]
+              e('div', { key: 'text', className: `${baseClassName}-caption-text` }, caption),
+              e('div', { key: 'balance', className: `${baseClassName}-caption-balance` }, balance),
+            ],
           );
         }
 
@@ -243,7 +240,7 @@ const StockLib = (() => {
           const { visibleColumns } = this.state;
           return e(
             'div',
-            {key: 'header', className: `${baseClassName}-header`},
+            { key: 'header', className: `${baseClassName}-header` },
             visibleColumns.map((col, index) => {
                 const style = col.style || {};
                 const className = `${baseClassName}-header-cell ${baseClassName}-header-cell-${col.id} cell-${col.id}`;
@@ -256,9 +253,9 @@ const StockLib = (() => {
                       style,
                       onClick: onHeaderCellClick.bind(this, col.id),
                     },
-                    col.caption
-                  )
-              }
+                    col.caption,
+                  );
+              },
             ));
         }
 
@@ -267,7 +264,7 @@ const StockLib = (() => {
           const { visibleColumns } = this.state;
           return e(
             'div',
-            {key: 'footer', className: `${baseClassName}-footer`},
+            { key: 'footer', className: `${baseClassName}-footer` },
             visibleColumns.map((col, index) => {
               const style = col.style || {};
               const text = col.id in totals ? totals[col.id] : undefined;
@@ -282,25 +279,25 @@ const StockLib = (() => {
                     style,
                     onClick: onFooterCellClick.bind(this, col.id),
                   },
-                  text
-                )
-            })
+                  text,
+                );
+            }),
           );
         }
 
         _renderRows() {
-          const {rows} = this.props;
-          const {visibleColumns} = this.state;
+          const { rows } = this.props;
+          const { visibleColumns } = this.state;
           return rows.map((row, index) =>
             e(
               'div',
-              {key: index, className: `${baseClassName}-row`},
-              this._renderColumns(visibleColumns, row, index))
+              { key: index, className: `${baseClassName}-row` },
+              this._renderColumns(visibleColumns, row, index)),
           );
         }
 
         _renderColumns(columns, row, rowIndex) {
-          const {onCellClick} = this.props;
+          const { onCellClick } = this.props;
           return columns.map((col, index) => {
               const style = col.style || {};
               const className = `${baseClassName}-row-cell ${baseClassName}-row-cell-${col.id} cell-${col.id}`;
@@ -313,16 +310,16 @@ const StockLib = (() => {
                     key: index,
                     className,
                     style,
-                    onClick: onCellClick.bind(this, {id: col.id, rownum: rowIndex}),
+                    onClick: onCellClick.bind(this, { id: col.id, rownum: rowIndex }),
                   },
-                  row[col.id]
-                )
-            }
+                  row[col.id],
+                );
+            },
           );
         }
       }
 
-      return {ReactStockTable};
+      return { ReactStockTable };
     };
 
     function StockTable(root, columns, stockClient, portfolioController) {
@@ -332,7 +329,7 @@ const StockLib = (() => {
         onCellClick: () => void 0,
       };
       // Init React classes when React available
-      const {ReactStockTable} = initClasses();
+      const { ReactStockTable } = initClasses();
 
       const render = (rows, caption, balance, totals) => {
         // rowsBuffer.update(rows);
@@ -358,7 +355,7 @@ const StockLib = (() => {
         },
         onCellClick: (handler) => {
           handlers.onCellClick = handler;
-        }
+        },
       };
     }
 
