@@ -1,0 +1,44 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Dependency directories
+node_modules
+jspm_packages
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+.idea/
+.vscode
+.project
+.history
+
+# Other
+build
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+./src/**/.DS_Store
+./src/**/.DS_Store?
+
+src/config/config.custom.json
+.config.json
+
+# Webpack cache
+.cache-loader
+
+*.swp
+.dappfile.render*
+.dapp_secret_key
+

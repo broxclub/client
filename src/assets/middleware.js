@@ -38,6 +38,9 @@ const StockLibMiddleware = (() => {
       const id = `${SECID}-${TYPE}`;
       if (map.has(id)) {
         const prevRow = map.get(id);
+        const pl = new Decimal(row.PL).plus(prevRow.PL);
+        const dealPriceQty = new Decimal(row.DEALPRICEQTY).plus(prevRow.DEALPRICEQTY);
+        const plpercent = new Decimal(100).mul(pl).div(dealPriceQty);
         const newRow = {
           ...prevRow,
           LOW: row.LOW,
@@ -47,8 +50,11 @@ const StockLibMiddleware = (() => {
           LCURRENTPRICE: row.LCURRENTPRICE,
           YIELD: row.YIELD,
           DEALPRICE_SHOW: row.DEALPRICE_SHOW,
+          DEALPRICEQTY: dealPriceQty.toNumber(),
           QUANTITY: new Decimal(row.QUANTITY).plus(prevRow.QUANTITY).toNumber(),
-          PL: new Decimal(row.PL).plus(prevRow.PL).toNumber(),
+          PL: pl.toNumber(),
+          PLPERCENT: plpercent.toNumber(),
+          PLPERCENT_SHOW: `${plpercent.toFixed(2)} %`,
           BPRICE: new Decimal(row.BPRICE).plus(prevRow.BPRICE).toNumber(),
         };
         map.set(id, newRow);
@@ -106,15 +112,18 @@ const StockLibMiddleware = (() => {
             voltoday, lcurrentprice, issuecapitalization, yieldtoprevyield, yieldtooffer, yieldlastcoupon, quantity,
             buyprice, pnl
           } = sec;
+
           if (!subscription[boardid]) {
             subscription[boardid] = [];
           }
+
           const lCurPriceDecimal = new Decimal(lcurrentprice || 0);
           const isBuy = type.toLowerCase() === 'buy';
           const bpriceDecimal = lCurPriceDecimal.mul(quantity || 0);
           const pnlDecimal = new Decimal(pnl);
           const plpercent = pnlDecimal.mul(100).div(bpriceDecimal);
           const [day, month, year] = moment(create_at).format('D-MMMM-YY').split('-');
+
           const row = {
             id: sec.id,
             portfolioId: portfolio.id,
@@ -161,13 +170,15 @@ const StockLibMiddleware = (() => {
               // bufRow.DEALPRICE - цена покупки
               if (bufRow.TYPE === 'buy') {
                 const lcurrentprice = new Decimal(LCURRENTPRICE || 0);
-                const pl = lcurrentprice.minus(bufRow.DEALPRICE).mul(bufRow.QUANTITY);
+                const pl = lcurrentprice.mul(bufRow.QUANTITY).minus(new Decimal(bufRow.DEALPRICE).mul(bufRow.QUANTITY));
                 const plpercent = pl.mul(100).div(bufRow.BPRICE);
+                const dealPriceQty = new Decimal(bufRow.DEALPRICE).mul(bufRow.QUANTITY);
                 const plpercentShow =
                   new Decimal(100)
                     .mul(pl)
-                    .div( new Decimal(bufRow.DEALPRICE).mul(bufRow.QUANTITY) );
+                    .div( dealPriceQty );
 
+                bufRow.DEALPRICEQTY = dealPriceQty.toNumber();
                 bufRow.BPRICE = lcurrentprice.mul(bufRow.QUANTITY).toNumber();
                 bufRow.PL = pl.toString();
                 bufRow.PLPERCENT_SHOW = `${plpercentShow.toFixed(2)} %`;
@@ -369,7 +380,6 @@ const StockLibMiddleware = (() => {
   const subscriptions = {};
 
   return async () => {
-    await StockLib.run(isLocalhost ? 'development' :  'production');
     const stockClient = new StockLib.Client(isLocalhost ? 'http://localhost:1313' : 'https://api.brox.club');
     await stockClient.connect();
 
