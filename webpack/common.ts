@@ -65,6 +65,7 @@ export const commonPlugins: webpack.Plugin[] = [
       return {
         bodyJS,
         staticJS: ['./assets/middleware.js'], // Depends on CopyWebpackPlugin
+        staticCSS: ['./assets/stocklib.css'],
         headJS: externalJS.concat(headJS),
         publicPath,
         chunks,
@@ -74,7 +75,7 @@ export const commonPlugins: webpack.Plugin[] = [
     }
   }),
   new CopyWebpackPlugin([
-    { from: `assets/*.js` }
+    { from: `assets/*` },
   ]),
   /*new DynamicCdnWebpackPlugin({
     only: ['react', 'react-dom', 'decimal.js', 'moment'],

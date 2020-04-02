@@ -1,0 +1,186 @@
+body {
+    font-size: 12px;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    background: #ECE9E0;
+    color: #656665;
+}
+
+div {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.stock-table {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    border-right: 1px solid #666;
+    border-left: 1px solid #666;
+}
+
+.stock-table__caption-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    border-top: 1px solid #666;
+    padding: 4px;
+}
+
+.stock-table__header {
+    display: flex;
+    border-bottom: 1px solid #666;
+    border-top: 1px solid #666;
+}
+
+.stock-table__header-cell-id {
+    font-size: 9px;
+}
+
+.stock-table__header-cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    border-collapse: collapse;
+    font-size: 12px;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.stock-table__header-cell:not(:last-child) {
+    border-left: 1px solid transparent;
+    border-right: 1px solid #666;
+}
+
+.stock-table__row {
+    display: flex;
+}
+
+.stock-table__row:nth-child(even) {
+    background: #eee;
+}
+
+.stock-table__row-cell {
+    display: flex;
+    border: 1px solid #eee8;
+    padding: 4px;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.stock-table__row-cell-positive {
+    color: #3ede0d;
+}
+
+.stock-table__row-cell-negative {
+    color: #de3716;
+}
+
+.stock-table__row-cell-PL,
+.stock-table__row-cell-BPRICE,
+.stock-table__row-cell-LCURRENTPRICE,
+.stock-table__row-cell-DEALPRICE_SHOW,
+.stock-table__row-cell-QUANTITY,
+.stock-table__row-cell-PLPERCENT_SHOW {
+    justify-content: flex-end;
+}
+
+.stock-table__footer {
+    display: flex;
+    border-bottom: 1px solid #666;
+    border-top: 1px solid #666;
+}
+
+.stock-table__footer-cell {
+    display: flex;
+    padding: 4px;
+    border: 1px solid transparent;
+    border-collapse: collapse;
+    white-space: normal;
+    word-break: break-all;
+}
+
+.stock-table__footer-cell-positive {
+    color: #3ede0d;
+}
+
+.stock-table__footer-cell-negative {
+    color: #de3716;
+}
+
+.stock-table__footer-cell-PL,
+.stock-table__footer-cell-PLPERCENT_SHOW,
+.stock-table__footer-cell-BPRICE {
+    border-left: 1px solid #666;
+    justify-content: flex-end;
+    font-weight: bold;
+}
+
+.stock-table__row-cell-ICO {
+    justify-content: center;
+}
+
+.stock-table__row-cell-ICO img {
+    width: 20px;
+    height: 20px;
+}
+
+.portfolio-table {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.portfolio-table-content {
+    display: flex;
+    position: relative;
+}
+
+.cell-ICO {
+    width: 40px;
+}
+
+.cell-ACTIONS {
+    width: 120px;
+}
+
+.cell-SECID {
+    width: 170px;
+}
+
+.cell-SECNAME {
+    width: 250px;
+}
+
+.cell-TYPE_SHOW {
+    width: 100px;
+}
+
+.cell-DATE {
+    width: 150px;
+}
+
+.cell-QUANTITY {
+    width: 150px
+}
+
+.cell-DEALPRICE_SHOW {
+    width: 100px
+}
+
+.cell-LCURRENTPRICE {
+    width: 100px;
+}
+
+.cell-PL {
+    width: 150px
+}
+
+.cell-PLPERCENT_SHOW {
+    width: 100px
+}
+
+.cell-BPRICE {
+    width: 150px;
+}
