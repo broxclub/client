@@ -52,10 +52,10 @@ const StockLibMiddleware = (() => {
           DEALPRICE_SHOW: row.DEALPRICE_SHOW,
           DEALPRICEQTY: dealPriceQty.toNumber(),
           QUANTITY: new Decimal(row.QUANTITY).plus(prevRow.QUANTITY).toNumber(),
-          PL: pl.toNumber(),
+          PL: pl.toFixed(2),
           PLPERCENT: plpercent.toNumber(),
           PLPERCENT_SHOW: `${plpercent.toFixed(2)} %`,
-          BPRICE: new Decimal(row.BPRICE).plus(prevRow.BPRICE).toNumber(),
+          BPRICE: new Decimal(row.BPRICE).plus(prevRow.BPRICE).toFixed(2),
         };
         map.set(id, newRow);
       } else {
@@ -135,7 +135,7 @@ const StockLibMiddleware = (() => {
             HIGH: high,
             MARKETPRICE: marketprice,
             VOLTODAY: voltoday,
-            DEALPRICE_SHOW: lcurrentprice > 0 ? lcurrentprice : `-${lcurrentprice}`,
+            DEALPRICE_SHOW: `${lcurrentprice > 0 ? '' : '-'}${new Decimal(lcurrentprice).toFixed(2)}`,
             TYPE_SHOW: isBuy ? 'Покупка' : 'Продажа',
             QUANTITY: quantity,
             YIELD: sec['yield'],
@@ -144,7 +144,7 @@ const StockLibMiddleware = (() => {
             BUYPRICE: buyprice,
             TYPE: type,
             PL: pnl,
-            PLPERCENT_SHOW: `${plpercent.toString()}`,
+            PLPERCENT_SHOW: `${plpercent.toFixed(2)}`,
             PLPERCENT: plpercent.toFixed(2),
             LCURRENTPRICE: '',
           };
@@ -165,7 +165,7 @@ const StockLibMiddleware = (() => {
             const LCURRENTPRICE = row.LCURRENTPRICE || row.WAPRICE;
 
             const updateRows = rowsArray.map(bufRow => {
-              bufRow.LCURRENTPRICE = LCURRENTPRICE;
+              bufRow.LCURRENTPRICE = new Decimal(LCURRENTPRICE).toFixed(2);
 
               // bufRow.DEALPRICE - цена покупки
               if (bufRow.TYPE === 'buy') {
@@ -179,8 +179,8 @@ const StockLibMiddleware = (() => {
                     .div( dealPriceQty );
 
                 bufRow.DEALPRICEQTY = dealPriceQty.toNumber();
-                bufRow.BPRICE = lcurrentprice.mul(bufRow.QUANTITY).toNumber();
-                bufRow.PL = pl.toString();
+                bufRow.BPRICE = lcurrentprice.mul(bufRow.QUANTITY).toFixed(2);
+                bufRow.PL = pl.toFixed(2);
                 bufRow.PLPERCENT_SHOW = `${plpercentShow.toFixed(2)} %`;
                 bufRow.PLPERCENT = plpercentShow.toFixed(2);
                 // PL * 100 / BPRICE
@@ -276,6 +276,7 @@ const StockLibMiddleware = (() => {
     const { totals, onFooterCellClick } = this.props;
     const style = col.style || {};
     const text = col.id in totals ? totals[col.id] : undefined;
+    const valueConverter = col.valueConverter || (value => value);
     const value = new Decimal(text || 0);
     return React.createElement(
       'div',
@@ -285,7 +286,7 @@ const StockLibMiddleware = (() => {
         style,
         onClick: onFooterCellClick.bind(this, col.id),
       },
-      text
+      valueConverter(text)
     );
   }
 
@@ -361,6 +362,7 @@ const StockLibMiddleware = (() => {
       valueColId: 'PLPERCENT',
       renderCell: renderPosNegCell,
       renderFooterCell: renderFooterPosNegCell,
+      valueConverter: (value) => `${value} %`,
     },
     {id: 'BPRICE', caption: 'Цена бумаг в портфеле', renderHeaderCell},
 

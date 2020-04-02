@@ -28,30 +28,31 @@
 <% }) %>
 
 <script>
-  const portfolioID = 1;
+  const urlParams = new URLSearchParams(window.location.search);
+  const portfolioID = urlParams.get('portfolio');
 
   StockLibMiddleware()
     .then(async (control) => {
       const portfolios = await control.listPortfolios();
       const container = document.getElementById('portfolios');
-      if (portfolios) {
-        const portfolioTable = document.createElement('div');
-        portfolioTable.className = 'portfolio-table';
-        container.appendChild(portfolioTable);
-        control.renderPortfolioToDom(portfolioID, portfolioTable);
+
+      if (portfolioID) {
+        if (portfolios) {
+          const portfolioTable = document.createElement('div');
+          portfolioTable.className = 'portfolio-table';
+          container.appendChild(portfolioTable);
+          control.renderPortfolioToDom(portfolioID, portfolioTable);
+        }
+      } else {
+        // RENDER ALL PORTFOLIOS TO SINGLE PLACE
+        Object.values(portfolios).forEach(portfolio => {
+          const portfolioTable = document.createElement('div');
+          portfolioTable.className = 'portfolio-table';
+          container.appendChild(portfolioTable);
+
+          control.renderPortfolioToDom(portfolio.id, portfolioTable);
+        });
       }
-
-      /*
-      // RENDER ALL PORTFOLIOS TO SINGLE PLACE
-      // const portfolios = await control.listPortfolios();
-      Object.values(portfolios).forEach(portfolio => {
-        const portfolioTable = document.createElement('div');
-        portfolioTable.className = 'portfolio-table';
-        container.appendChild(portfolioTable);
-
-        control.renderPortfolioToDom(portfolio.id, portfolioTable);
-      });
-      */
 
     })
     .catch(e => console.error(e));
