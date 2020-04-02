@@ -14,6 +14,7 @@ import autoprefixer from 'autoprefixer';
 import stylelint from 'stylelint';
 import doiuse from 'doiuse';
 import { ICustomConfig } from 'config/types/config';
+import { rtrim } from '../src/util';
 
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 // const DynamicCdnWebpackPlugin = require('dynamic-cdn-webpack-plugin');
@@ -34,6 +35,7 @@ try {
 }
 
 const moduleExt = `${process.env.NODE_ENV}${isProduction ? '.min' : ''}`;
+export const publicPath = isProduction ? 'https://api.brox.club/client/' : './';
 
 export const commonPlugins: webpack.Plugin[] = [
   new CleanWebpackPlugin(['build'], { root: path.resolve(__dirname, '..') }),
@@ -46,7 +48,7 @@ export const commonPlugins: webpack.Plugin[] = [
     inject: false,
     chunksSortMode: sortChunks,
     templateParameters: (compilation: any, assets: any, options: any) => {
-      const { publicPath, chunks, js: originalJS, css, manifest } = assets;
+      const { publicPath: assetPublicPath, chunks, js: originalJS, css, manifest } = assets;
       let externalJS = [ ...originalJS ];
       const headJS: string[] = [];
       const bodyJS: string[] = [];
@@ -55,19 +57,20 @@ export const commonPlugins: webpack.Plugin[] = [
         externalJS = externalJS.filter(path => path !== entry);
         switch (chunkName) {
           case 'app':
-            bodyJS.push(`.${entry}`);
+            bodyJS.push(`${rtrim(publicPath)}${entry}`);
             break;
           default:
-            headJS.push(`.${entry}`);
+            headJS.push(`${rtrim(publicPath)}${entry}`);
         }
       });
 
       return {
         bodyJS,
-        staticJS: ['./assets/middleware.js'], // Depends on CopyWebpackPlugin
-        staticCSS: ['./assets/stocklib.css'],
+        staticJS: [`${rtrim(publicPath)}/assets/middleware.js`], // Depends on CopyWebpackPlugin
+        staticCSS: [`${rtrim(publicPath)}/assets/stocklib.css`],
         headJS: externalJS.concat(headJS),
         publicPath,
+        assetPublicPath,
         chunks,
         css,
         manifest,
@@ -232,11 +235,14 @@ export const commonConfig: webpack.Configuration = {
   target: 'web',
   context: path.resolve(__dirname, '..', 'src'),
   output: {
-    // publicPath: './',
-    sourceMapFilename: `js/[${chunkName}]-[${chunkHash}].bundle.map`,
+    // publicPath: isProduction ? 'https://api.brox.club/' : './',
+    // sourceMapFilename: `js/[${chunkName}]-[${chunkHash}].bundle.map`,
+    sourceMapFilename: `js/[${chunkName}].bundle.map`,
     path: path.resolve(__dirname, '..', 'build'),
-    filename: `js/[name]-[${chunkHash}].bundle.js`,
-    chunkFilename: `js/[${chunkName}]-[${chunkHash}].bundle.js`,
+    // filename: `js/[name]-[${chunkHash}].bundle.js`,
+    filename: `js/[name].bundle.js`,
+    // chunkFilename: `js/[${chunkName}]-[${chunkHash}].bundle.js`,
+    chunkFilename: `js/[${chunkName}].bundle.js`,
     globalObject: 'this',
   },
   externals: {

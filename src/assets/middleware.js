@@ -384,12 +384,18 @@ const StockLibMiddleware = (() => {
     await stockClient.connect();
 
     return {
-      listPortfolios: async () => {
-        const portfolios = await stockClient.listPortfolios();
-        currentPortfolios = portfolios.reduce((acc, portfolio) => {
-          acc[portfolio.id] = portfolio;
-          return acc;
-        }, {});
+      listPortfolios: async (portfolioId) => {
+        const portfolios = await stockClient.listPortfolios(portfolioId);
+        if (portfolioId) {
+          currentPortfolios = {
+            [portfolioId]: portfolios,
+          }
+        } else {
+          currentPortfolios = portfolios.reduce((acc, portfolio) => {
+            acc[portfolio.id] = portfolio;
+            return acc;
+          }, {});
+        }
         return currentPortfolios;
       },
       renderPortfolioToDom: (portfolioId, domElement) => {

@@ -1,11 +1,4 @@
-body {
-    font-size: 12px;
-    font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-    background: #ECE9E0;
-    color: #656665;
-}
-
-div {
+.stock-table div {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;

@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <style>
+    body {
+      font-size: 12px;
+      font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+      background: #ECE9E0;
+      color: #656665;
+    }
+  </style>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="format-detection" content="telephone=no">
   <meta charset="UTF-8">
   <title></title>
-<% headJS.forEach(function(src) { %>
-  <script type="text/javascript" src="<%= src %>"></script>
-<% }) %>
-<% staticCSS.forEach(function(src) { %>
-  <link rel="stylesheet" href="<%= src %>">
+<% headJS.forEach(function(src) { %>  <script type="text/javascript" src="<%= src %>"></script>
+<% }) %><% staticCSS.forEach(function(src) { %>  <link rel="stylesheet" href="<%= src %>">
 <% })%>
 
 </head>
@@ -18,20 +23,27 @@
   <div id="root"></div>
   <div id="portfolios"></div>
 
-<% bodyJS.forEach(function(src) { %>
-  <script src="<%= src %>"></script>
-<% }) %>
-
-<% staticJS.forEach(function(src) { %>
-  <script src="<%= src %>"></script>
+<% bodyJS.forEach(function(src) { %>  <script src="<%= src %>"></script>
+<% }) %><% staticJS.forEach(function(src) { %>  <script src="<%= src %>"></script>
 <% }) %>
 
 <script>
+  const portfolioID = 1;
+
   StockLibMiddleware()
     .then(async (control) => {
       const portfolios = await control.listPortfolios();
       const container = document.getElementById('portfolios');
+      if (portfolios) {
+        const portfolioTable = document.createElement('div');
+        portfolioTable.className = 'portfolio-table';
+        container.appendChild(portfolioTable);
+        control.renderPortfolioToDom(portfolioID, portfolioTable);
+      }
 
+      /*
+      // RENDER ALL PORTFOLIOS TO SINGLE PLACE
+      // const portfolios = await control.listPortfolios();
       Object.values(portfolios).forEach(portfolio => {
         const portfolioTable = document.createElement('div');
         portfolioTable.className = 'portfolio-table';
@@ -39,6 +51,7 @@
 
         control.renderPortfolioToDom(portfolio.id, portfolioTable);
       });
+      */
 
     })
     .catch(e => console.error(e));
