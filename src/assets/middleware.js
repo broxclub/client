@@ -247,7 +247,7 @@ const StockLibMiddleware = (() => {
         style,
         onClick: onHeaderCellClick.bind(this, col.id),
       },
-      React.createElement('div', { key: 'caption', className: `${baseClassName}-header-cell-caption` }, col.caption),
+      React.createElement('div', { key: 'caption', className: `${baseClassName}__header-cell-caption` }, col.caption),
       /*[
         React.createElement('div', { key: 'caption', className: `${baseClassName}-header-cell-caption` }, col.caption),
         React.createElement('div', { key: 'id', className: `${baseClassName}-header-cell-id` }, `(${col.id})`),
@@ -264,7 +264,7 @@ const StockLibMiddleware = (() => {
       'div',
       {
         key: `${rowIndex}-${col.id}`,
-        className: `${className} ${baseClassName}-row-cell-${value.isNegative() ? 'negative' : 'positive'}`,
+        className: `${className} ${baseClassName}__row-cell-${value.isNegative() ? 'negative' : 'positive'}`,
         style,
         onClick: onCellClick.bind(this, {id: col.id, rownum: rowIndex}),
       },
@@ -281,7 +281,7 @@ const StockLibMiddleware = (() => {
       'div',
       {
         key: col.id,
-        className: `${className} ${baseClassName}-footer-cell-${value.isNegative() ? 'negative' : 'positive'}`,
+        className: `${className} ${baseClassName}__footer-cell-${value.isNegative() ? 'negative' : 'positive'}`,
         style,
         onClick: onFooterCellClick.bind(this, col.id),
       },
