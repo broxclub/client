@@ -55,10 +55,10 @@ export const commonPlugins: webpack.Plugin[] = [
         externalJS = externalJS.filter(path => path !== entry);
         switch (chunkName) {
           case 'app':
-            bodyJS.push(entry);
+            bodyJS.push(`.${entry}`);
             break;
           default:
-            headJS.push(entry);
+            headJS.push(`.${entry}`);
         }
       });
 
@@ -231,6 +231,7 @@ export const commonConfig: webpack.Configuration = {
   target: 'web',
   context: path.resolve(__dirname, '..', 'src'),
   output: {
+    // publicPath: './',
     sourceMapFilename: `js/[${chunkName}]-[${chunkHash}].bundle.map`,
     path: path.resolve(__dirname, '..', 'build'),
     filename: `js/[name]-[${chunkHash}].bundle.js`,
