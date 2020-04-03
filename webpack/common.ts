@@ -78,7 +78,8 @@ export const commonPlugins: webpack.Plugin[] = [
     }
   }),
   new CopyWebpackPlugin([
-    { from: `assets/*` },
+    { from: `assets/*.js` },
+    { from: `assets/*.css` },
   ]),
   /*new DynamicCdnWebpackPlugin({
     only: ['react', 'react-dom', 'decimal.js', 'moment'],
