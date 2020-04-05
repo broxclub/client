@@ -49,6 +49,7 @@ export const commonPlugins: webpack.Plugin[] = [
     chunksSortMode: sortChunks,
     templateParameters: (compilation: any, assets: any, options: any) => {
       const { publicPath: assetPublicPath, chunks, js: originalJS, css, manifest } = assets;
+      console.log('css: ', css);
       let externalJS = [ ...originalJS ];
       const headJS: string[] = [];
       const bodyJS: string[] = [];
@@ -72,7 +73,7 @@ export const commonPlugins: webpack.Plugin[] = [
         publicPath,
         assetPublicPath,
         chunks,
-        css,
+        css: (css || []).map((src: string) => `${rtrim(publicPath)}${src}`),
         manifest,
       };
     }

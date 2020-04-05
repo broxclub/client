@@ -90,8 +90,9 @@ class BuyForm extends React.PureComponent<TProps, IState> {
 
   public componentDidMount() {
     this.props.loadPortfolio(this.props.portfolioId);
-    this.activeFilter = new ActiveFilter<ISecuritiy>(this.props.securities);
-    this.setState({ filteredSecurities: this.props.securities });
+    const securities = this.activeSecurities;
+    this.activeFilter = new ActiveFilter<ISecuritiy>(securities);
+    this.setState({ filteredSecurities: securities });
     this.props.loadSecurities({
       fields: ['BOARDID', 'SECID', 'ISIN', 'SECNAME', 'LCURRENTPRICE'],
       filter: '',
@@ -102,10 +103,11 @@ class BuyForm extends React.PureComponent<TProps, IState> {
     dataVersion: prevDataVersion,
     buySecuritiesCommunication: prevBuySecuritiesCommunication,
   }: TProps) {
-    const { dataVersion, securities, buySecuritiesCommunication } = this.props;
+    const { dataVersion, buySecuritiesCommunication } = this.props;
     if (prevDataVersion != dataVersion) {
-      this.activeFilter = new ActiveFilter<ISecuritiy>(securities);
-      this.setState({ filteredSecurities: securities });
+      const activeSecurities = this.activeSecurities;
+      this.activeFilter = new ActiveFilter<ISecuritiy>(activeSecurities);
+      this.setState({ filteredSecurities: activeSecurities });
     }
 
     if (!prevBuySecuritiesCommunication.isLoaded && buySecuritiesCommunication.isLoaded) {
@@ -190,6 +192,11 @@ class BuyForm extends React.PureComponent<TProps, IState> {
         </div>
       </div>
     );
+  }
+
+  private get activeSecurities() {
+    const { securities } = this.props;
+    return securities.filter(sec => sec.LCURRENTPRICE > 0);
   }
 
   @bind

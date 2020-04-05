@@ -17,8 +17,10 @@ const rules = commonRules.concat([
 
 const plugins = commonPlugins.concat([
   new MiniCssExtractPlugin({
-    filename: '[name].[hash].css',
-    chunkFilename: '[id].[hash].css',
+    filename: '[name].css',
+    chunkFilename: '[id].css',
+    // filename: '[name].[hash].css',
+    // chunkFilename: '[id].[hash].css',
   }),
 ]);
 

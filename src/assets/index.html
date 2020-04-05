@@ -15,7 +15,8 @@
   <meta charset="UTF-8">
   <title></title>
 <% headJS.forEach(function(src) { %>  <script type="text/javascript" src="<%= src %>"></script>
-<% }) %><% staticCSS.forEach(function(src) { %>  <link rel="stylesheet" href="<%= src %>">
+<% }) %><% css.forEach(function(src) { %>  <link rel="stylesheet" href="<%= src %>">
+<% })%><% staticCSS.forEach(function(src) { %>  <link rel="stylesheet" href="<%= src %>">
 <% })%>
 
 </head>

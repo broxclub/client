@@ -12,6 +12,8 @@ import 'moment';
 import Api from 'services/Api/Api';
 import { AppContainer } from 'react-hot-loader';
 
+import './core.scss';
+
 interface IOwnProps {
   api: Api;
 }
