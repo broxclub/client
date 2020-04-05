@@ -1,0 +1,74 @@
+@import "src/shared/view/styles/mixins";
+
+.input-base-field {
+  display: flex;
+  flex-direction: column;
+
+  &__input-container {
+    display: flex;
+    width: 100%;
+    border: 1px solid;
+
+    @include themed('border-color', 'default-input-border-color');
+
+    & input {
+      padding-left: 10px;
+      padding-right: 10px;
+
+      &::placeholder {
+        font-size: 13px;
+        color: #5554;
+      }
+    }
+
+    &_with-error {
+      @include themed('border-color', 'default-input-error-border-color');
+    }
+
+    &_with-left-icon {
+      & input {
+        padding-left: 40px;
+      }
+    }
+
+    &_with-right-icon {
+      & input {
+        padding-right: 40px;
+      }
+    }
+  }
+
+  & .input-base__field {
+    width: 100%;
+    color: #000;
+  }
+
+  & .input-base-field {
+    display: flex;
+
+    &__input-container {
+      display: flex;
+      position: relative;
+    }
+
+    &__left-part {
+      position: absolute;
+      display: flex;
+      padding: 6px;
+      align-self: center;
+      width: 40px;
+      height: 100%;
+      left: 0;
+    }
+
+    &__right-part {
+      position: absolute;
+      display: flex;
+      padding: 6px;
+      align-self: center;
+      width: 40px;
+      height: 100%;
+      right: 0;
+    }
+  }
+}

@@ -1,17 +1,29 @@
 import React from 'react';
 import block from 'bem-cn';
 import { IRow, TColumnsDefinition } from '../types/stock';
+import { bind } from 'decko';
+import { BuyForm } from 'features/stock/view/containers';
+
+/**
+ * High order hooks (component external communication)
+ */
+export interface IHooks {
+  /**
+   * Reload request high order hook
+   */
+  onReloadRequested?(): void;
+}
 
 type TTotals = { [key: string]: string };
 
 export interface IOwnProps {
   caption?: string;
+  portfolioId: number;
   columns: TColumnsDefinition;
   rows: IRow[];
   totals?: TTotals;
   balance?: string | React.ReactNode;
-  stockClient: any;
-  portfolioController: any;
+  hooks: IHooks;
   onHeaderCellClick(): void;
   onFooterCellClick(): void;
   onCellClick(): void;
@@ -20,6 +32,7 @@ export interface IOwnProps {
 interface IState {
   visibleColumns: TColumnsDefinition;
   keys: TColumnsDefinition;
+  buyFormVisible: boolean;
 }
 
 const b = block('stock-table');
@@ -30,6 +43,7 @@ class StockTable extends React.PureComponent<TProps, IState> {
   public state: IState = {
     visibleColumns: [],
     keys: [],
+    buyFormVisible: false,
   };
 
   public componentDidMount() {
@@ -41,13 +55,33 @@ class StockTable extends React.PureComponent<TProps, IState> {
   }
 
   public render() {
-    const { caption, totals } = this.props;
+    const { caption, totals, portfolioId } = this.props;
+    const { buyFormVisible } = this.state;
     return (
-      <div className={b()}>
-        {caption && this.renderCaption()}
-        {this.renderHeader()}
-        {this.renderRows()}
-        {totals && this.renderTotals(totals)}
+      <>
+        {buyFormVisible && (
+          <BuyForm
+            onClose={this.handleBuyFormClose}
+            onBuySuccess={this.handleBuySuccess}
+            portfolioId={portfolioId}
+          />
+        )}
+        <div className={b()}>
+          {caption && this.renderCaption()}
+          {this.renderHeader()}
+          {this.renderRows()}
+          {totals && this.renderTotals(totals)}
+          {this.renderActions()}
+        </div>
+      </>
+    );
+  }
+
+  @bind
+  private renderActions() {
+    return (
+      <div className={b('actions')}>
+        <button onClick={this.handleBuy}>Купить</button>
       </div>
     );
   }
@@ -135,6 +169,22 @@ class StockTable extends React.PureComponent<TProps, IState> {
         })}
       </div>
     );
+  }
+
+  @bind
+  private handleBuy() {
+    this.setState({ buyFormVisible: true });
+  }
+
+  @bind
+  private handleBuyFormClose() {
+    this.setState( { buyFormVisible: false });
+  }
+
+  @bind
+  private handleBuySuccess() {
+    const { onReloadRequested = () => void 0 } = this.props.hooks;
+    onReloadRequested();
   }
 }
 

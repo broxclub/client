@@ -1,0 +1,17 @@
+@import './default/theme';
+
+$themes: (
+  default: $default,
+);
+
+@mixin themed($propName, $valueName) {
+  @each $theme, $themeMap in $themes {
+    & {
+      @if map-has-key($themeMap, $valueName) {
+        #{$propName}: map-get($themeMap, $valueName);
+      } @else {
+        @error 'The #{$valueName} color doesn\'t exist in the #{$theme} theme';
+      }
+    }
+  }
+}

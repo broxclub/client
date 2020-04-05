@@ -1,0 +1,53 @@
+.securities-table {
+  display: flex;
+  flex: 1 1 auto;
+
+  body &__header-row {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  &__header-cell {
+    text-align: center;
+
+    &_LCURRENTPRICE {
+      text-align: center;
+    }
+
+    &_CHECK {
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+    }
+  }
+
+  &__cell {
+    &_LCURRENTPRICE {
+      text-align: right;
+    }
+  }
+
+  &__header-cell-col {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    position: relative;
+
+    &_checkbox {
+      display: flex;
+      flex: 1;
+      align-items: center;
+    }
+
+    &-input {
+      & input {
+        width: 100%;
+      }
+    }
+  }
+
+  &__row-checkbox {
+    display: flex;
+    justify-content: center;
+  }
+}

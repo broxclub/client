@@ -1,45 +1,72 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import StockTable, { IOwnProps as IStockTableProps } from '../controllers/StockTable';
-import StockClient from './StockClient';
+import { IHooks, IOwnProps as IStockTableProps } from '../controllers/StockTable';
+import StockClientWS, { TCallback } from 'services/Api/StockClientWS';
+import { rtrim } from '../util';
+import StockTableInstance from 'classes/StockTableInstance';
+import Api from 'services/Api/Api';
 
-export const StockLib = {
-  Table: (root: HTMLElement, columns: IStockTableProps['columns'], stockClient: StockClient, portfolioController: any) => {
-    const handlers = {
-      onHeaderCellClick: () => void 0,
-      onFooterCellClick: () => void 0,
-      onCellClick: () => void 0,
-    };
+class StockLib {
+  private readonly _baseUrl: string;
+  private wsClient: StockClientWS;
+  private _api: Api;
 
-    const render = (
-      rows: IStockTableProps['rows'],
-      caption: IStockTableProps['caption'],
-      balance: IStockTableProps['balance'],
-      totals: IStockTableProps['totals']
-    ) => {
-      ReactDOM.render(<StockTable
-        columns={columns}
-        rows={rows}
-        totals={totals}
-        caption={caption}
-        balance={balance}
-        stockClient={stockClient}
-        portfolioController={portfolioController}
-        onHeaderCellClick={handlers.onHeaderCellClick}
-        onFooterCellClick={handlers.onFooterCellClick}
-        onCellClick={handlers.onCellClick}
-      />, root);
-    };
-
-    return {
-      render,
-      onHeaderCellClick: (handler: any) => {
-        handlers.onHeaderCellClick = handler;
-      },
-      onCellClick: (handler: any) => {
-        handlers.onCellClick = handler;
+  constructor(url: string) {
+    let useSsl = false;
+    if (url.indexOf('http') === 0) {
+      if (url.indexOf('https') === 0) {
+        useSsl = true;
       }
-    };
-  },
-  Client: StockClient,
-};
+
+      url = url.replace(/^https?\:/, '');
+    }
+    this._baseUrl = rtrim(`http${useSsl ? 's' : ''}://${url}`);
+    this.wsClient = new StockClientWS(`ws${useSsl ? 's' : ''}://${url}`);
+
+    this._api = new Api(this._baseUrl);
+  }
+
+  public async connect() {
+    try {
+      await this.wsClient.connect();
+    } catch(error) {
+      console.error('Websocket connection error: ', error);
+      throw error;
+    }
+  }
+
+  public tableInstance(
+    root: HTMLElement,
+    columns: IStockTableProps['columns'],
+    portfolioId: number,
+    hooks: IHooks,
+  ) {
+    return new StockTableInstance(this, root, columns, portfolioId, hooks);
+  }
+
+  public async listPortfolios(portfolioId?: number) {
+    const response = await this._api.stock.listPortfolios();
+    return response;
+  }
+
+  public async listPortfolioSecurities(portfolioId: number) {
+    const response = await this._api.stock.listPortfolioSecurities(portfolioId);
+    return response;
+  }
+
+  public subscribeMarkets(markets: string[], callback: TCallback): number {
+    return this.wsClient.subscribeMarkets(markets, callback);
+  }
+
+  public unsubscribe(invocationId: number) {
+    this.wsClient.unsubscribe(invocationId);
+  }
+
+  public get baseUrl() {
+    return this._baseUrl;
+  }
+
+  public get api() {
+    return this._api;
+  }
+}
+
+export default StockLib;

@@ -1,0 +1,46 @@
+@import './themes/index';
+
+@keyframes materialize {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sizeUp-animation {
+  from {
+    transform: scale(0.5);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes sizeDown-animation {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(0);
+  }
+}
+
+@mixin fadeIn {
+  animation: materialize;
+  animation-duration: 0.4s;
+}
+
+@mixin sizeUp($duration) {
+  animation: sizeUp-animation;
+  animation-duration: $duration;
+}
+
+@mixin sizeDown($duration) {
+  animation: sizeDown-animation;
+  animation-duration: $duration;
+}

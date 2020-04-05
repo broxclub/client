@@ -1,0 +1,32 @@
+.buy-done {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+
+  &__error {
+    margin: 20px 0;
+    font-size: 15px;
+  }
+
+  &__caption {
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  &__row {
+    display: flex;
+
+    &-cell {
+      display: flex;
+      padding: 10px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+
+    & button {
+      width: 100%;
+    }
+  }
+}

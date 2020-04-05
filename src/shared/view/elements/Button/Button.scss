@@ -1,0 +1,201 @@
+@import 'src/shared/view/styles/mixins';
+
+@mixin disable() {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.button {
+  $r: &;
+
+  position: relative;
+  display: flex;
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+  border: none;
+  outline: none;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  justify-content: center;
+  align-items: center;
+
+  &:focus {
+    outline: none;
+    border: 1px solid #0002;
+    box-shadow: 2px 2px 10px #0007;
+  }
+
+  &:disabled {
+    @include disable();
+  }
+
+  &_rounded {
+    border-radius: 4px;
+  }
+
+  &_size {
+    &_large {
+      $height: 40px;
+
+      height: $height;
+      padding: 0 10px;
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    &_medium {
+      $height: 30px;
+
+      height: $height;
+      padding: 0 0.5rem;
+      font-size: 0.8125rem;
+      line-height: 1.125rem;
+    }
+
+    &_small {
+      $height: 1.625rem;
+
+      height: $height;
+      padding: 0 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      line-height: 1.125rem;
+    }
+
+    &_xsmall {
+      $height: 1.5rem;
+
+      height: $height;
+      padding: (4rem/16) (13.5rem/16) (6rem/16);
+      font-size: 0.625rem;
+      font-weight: 600;
+      line-height: 0.875rem;
+
+      #{$r}__icon_kind {
+        &_dropdown,
+        &_dropdown-open {
+          $height: (3rem/16);
+
+          right: (6rem/16);
+          width: (6rem/16);
+          height: $height;
+        }
+      }
+    }
+  }
+
+  &_color {
+    @mixin buttonColors(
+      $color,
+      $iconColor,
+      $backgroundColor,
+      $hoverColor,
+      $hoverBackgroundColor,
+      $activeColor,
+      $activeBackgroundColor,
+      $disabledColor,
+      $disabledIconColor,
+      $disabledBackgroundColor
+    ) {
+      @include themed('color', $color);
+      @include themed('background-color', $backgroundColor);
+
+      & > #{$r}__icon,
+      & > #{$r}__preloader {
+        rect {
+          @include themed('fill', $backgroundColor);
+        }
+
+        path {
+          @include themed('fill', $iconColor);
+        }
+
+        circle {
+          @include themed('stroke', $iconColor);
+        }
+      }
+
+      &:hover {
+        @include themed('color', $hoverColor);
+        @include themed('background-color', $hoverBackgroundColor);
+
+        & > #{$r}__icon,
+        & > #{$r}__preloader {
+          rect {
+            @include themed('fill', $hoverBackgroundColor);
+          }
+
+          path {
+            @include themed('fill', $hoverColor);
+          }
+        }
+      }
+
+      &:active,
+      &#{$r}_active {
+        @include themed('color', $activeColor);
+        @include themed('background-color', $activeBackgroundColor);
+
+        & > #{$r}__icon,
+        & > #{$r}__preloader {
+          rect {
+            @include themed('fill', $activeBackgroundColor);
+          }
+
+          path {
+            @include themed('fill', $activeColor);
+          }
+        }
+      }
+
+      &:disabled {
+        @include themed('color', $disabledColor);
+        @include themed('background-color', $disabledBackgroundColor);
+
+        & > #{$r}__icon,
+        & > #{$r}__preloader {
+          rect {
+            @include themed('fill', $disabledBackgroundColor);
+          }
+
+          path {
+            @include themed('fill', $disabledIconColor);
+          }
+        }
+      }
+    }
+
+    // COLOR SCHEME IMPLEMENTATION
+
+    &_light-blue {
+      @include buttonColors(
+        'button-light-blue-color',
+        'button-light-blue-icon-color',
+        'button-light-blue-background',
+        'button-light-blue-color',
+        'button-light-blue-hover-background',
+        'button-light-blue-color',
+        'button-light-blue-active-background',
+        'button-light-blue-disabled-color',
+        'button-light-blue-disabled-icon-color',
+        'button-light-blue-background'
+      );
+    }
+
+    &_light-green {
+      @include buttonColors(
+        'button-light-green-color',
+        'button-light-green-icon-color',
+        'button-light-green-background',
+        'button-light-green-color',
+        'button-light-green-hover-background',
+        'button-light-green-color',
+        'button-light-green-active-background',
+        'button-light-green-disabled-color',
+        'button-light-green-disabled-icon-color',
+        'button-light-green-background'
+      );
+    }
+  }
+}

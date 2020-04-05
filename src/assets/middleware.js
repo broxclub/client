@@ -93,17 +93,12 @@ const StockLibMiddleware = (() => {
       }
     };
 
-    const stockTable = new StockLib.Table(tabHolder, columns, stockClient, controller);
-    /*stockTable.onHeaderCellClick((e) => {
-      console.log('[[onHeaderCellClick]]', e);
+    const stockTable = stockClient.tableInstance(tabHolder, columns, portfolio.id, {
+      onReloadRequested: () => controller.refresh(),
     });
 
-    stockTable.onCellClick((e) => {
-      console.log('[[onCellClick]]', e);
-    });*/
-
     const update = () => {
-      stockClient.listPortfolios(portfolio.id).then(securities => {
+      stockClient.listPortfolioSecurities(portfolio.id).then(securities => {
         const rowsBuffer = new RowsBuffer(columns);
         const subscription = {};
         for (const sec of securities) {
@@ -382,7 +377,7 @@ const StockLibMiddleware = (() => {
   const subscriptions = {};
 
   return async () => {
-    const stockClient = new StockLib.Client(isLocalhost ? 'http://localhost:1313' : 'https://api.brox.club');
+    const stockClient = new StockLib(isLocalhost ? 'http://localhost:1313' : 'https://api.brox.club');
     await stockClient.connect();
 
     return {

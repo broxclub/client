@@ -1,0 +1,17 @@
+@import "src/shared/view/styles/mixins";
+
+.error {
+  display: flex;
+  align-items: flex-start;
+
+  &__icon {
+    width: 12px;
+    height: 12px;
+    margin: 2px;
+  }
+
+  &__text {
+    white-space: pre-line;
+    margin-left: 2px;
+  }
+}

@@ -1,12 +1,16 @@
 const STOCKS = 'stocks';
 
-type TCallback = (props: object) => void;
+export type TCallback = (props: object) => void;
 
 class StockClientWS {
   private commandId: number = 0;
   protected wsUrl: string = '';
   private ws: WebSocket | null = null;
   private channels: Map<number, TCallback> = new Map();
+
+  constructor(wsUrl: string) {
+    this.wsUrl = wsUrl;
+  }
 
   public wsSend(commandId: number, command: string, props?: object) {
     this.ws!.send(JSON.stringify(props ? [commandId, command, props] : [commandId, command]));
@@ -26,6 +30,7 @@ class StockClientWS {
       this.channels.set(invocationId, callback);
       return invocationId;
     }
+    return -1;
   }
 
   public unsubscribe(invocationId: number) {

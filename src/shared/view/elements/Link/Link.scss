@@ -1,0 +1,8 @@
+@import "src/shared/view/styles/mixins";
+
+.link {
+  cursor: pointer;
+  text-decoration: none;
+
+  @include themed('color', 'link-default-color');
+}

@@ -1,0 +1,97 @@
+@import 'src/shared/view/styles/mixins';
+
+.preloader {
+  $color: #000;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+
+  &_position {
+    &_absolute,
+    &_fixed {
+      z-index: 10000;
+      top: 0;
+      left: 0;
+    }
+
+    &_absolute {
+      position: absolute;
+    }
+
+    &_fixed {
+      position: fixed;
+    }
+  }
+
+  &__caption {
+    display: flex;
+    justify-content: center;
+
+    @include themed('color', 'default-label-color');
+  }
+
+  &__inner {
+    position: absolute;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+}
+
+.loader {
+  path {
+    fill: #0002;
+  }
+}
+
+.inner {
+  transform-origin: center center;
+}
+
+.inner.one {
+  animation: rotate-one 1s linear infinite;
+}
+
+.inner.two {
+  animation: rotate-two 1s linear infinite;
+}
+
+.inner.three {
+  animation: rotate-three 1s linear infinite;
+}
+
+@keyframes rotate-one {
+  0% {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg);
+  }
+
+  100% {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg);
+  }
+}
+
+@keyframes rotate-two {
+  0% {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg);
+  }
+
+  100% {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg);
+  }
+}
+
+@keyframes rotate-three {
+  0% {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg);
+  }
+
+  100% {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg);
+  }
+}

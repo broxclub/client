@@ -1,0 +1,25 @@
+.buy-form {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+
+  &__error {
+    padding: 10px 0;
+  }
+
+  &__actions {
+    display: flex;
+    margin-top: 20px;
+
+    & .button {
+      width: 100%;
+    }
+  }
+
+  &__table-container {
+    & .securities-table {
+      width: 700px;
+      height: 300px;
+    }
+  }
+}

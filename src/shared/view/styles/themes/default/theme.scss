@@ -1,0 +1,41 @@
+@import './variables';
+
+$default: (
+  'root-background-color': $bg-color,
+  'root-font-family': $font-family,
+  'form-background-color': $white,
+
+  'modal-header-background-color': $link-color,
+  'modal-header-color': $white,
+  'modal-content-background-color': $white,
+
+  'default-label-color': $default-gray,
+  'default-input-border-color': $default-gray,
+  'default-input-error-border-color': $red,
+
+  'button-light-blue-color': $white,
+  'button-light-blue-background': $button-default-color,
+  'button-light-blue-hover-background': $button-default-color,
+  'button-light-blue-active-background': $button-default-color,
+  'button-light-blue-icon-color': $white,
+  'button-light-blue-disabled-color': $white,
+  'button-light-blue-disabled-icon-color': $gray,
+
+  'button-light-green-color': $white,
+  'button-light-green-background': $button-green-color,
+  'button-light-green-hover-background': $button-green-color,
+  'button-light-green-active-background': $button-green-color,
+  'button-light-green-icon-color': $white,
+  'button-light-green-disabled-color': $white,
+  'button-light-green-disabled-icon-color': $gray,
+
+  'link-default-color': $link-color,
+
+  'checkbox-label-color': $default-gray,
+  'checkbox-border-color': $input-border-color,
+  'checkbox-background-color': transparent,
+  'checkbox-active-border-color': $input-border-color,
+  'checkbox-active-background-color': transparent,
+  'checkbox-disabled-border-color': $input-border-color,
+  'checkbox-disabled-background-color': transparent
+);

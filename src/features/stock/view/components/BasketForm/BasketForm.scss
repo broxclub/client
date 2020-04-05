@@ -1,0 +1,103 @@
+.basket-form {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+
+  &__portfolio {
+    display: flex;
+    justify-content: space-between;
+
+    &-cell {
+      $c: &;
+
+      display: flex;
+      font-size: 14px;
+
+      &_warn {
+        #{$c}-value {
+          color: #f00;
+        }
+
+        #{$c}-warn-section {
+          display: flex;
+        }
+      }
+
+      &-warn-section {
+        display: none;
+        padding: 10px;
+        color: #f00;
+      }
+
+      &-title {
+        font-weight: bold;
+        padding: 10px;
+      }
+
+      &-value {
+        padding: 10px;
+      }
+    }
+  }
+
+  &__table {
+    width: 700px;
+    height: 200px;
+  }
+
+  &__error {
+    padding: 10px 0;
+  }
+
+  &__row {
+    display: flex;
+
+    &-quantity {
+      & input {
+        width: 100px;
+      }
+    }
+
+    &-actions {
+      display: flex;
+      justify-content: center;
+
+      &-trash {
+        path {
+          fill: #e00;
+        }
+      }
+
+      & .icon {
+        width: 12px;
+        height: 12px;
+        cursor: pointer;
+      }
+    }
+
+    &-price {
+      text-align: right;
+    }
+
+    &-cell {
+      display: flex;
+      padding: 10px;
+    }
+  }
+
+  &__totals-row {
+    display: flex;
+
+    &-col {
+      padding: 10px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+
+    & button {
+      width: 100%;
+    }
+  }
+}
