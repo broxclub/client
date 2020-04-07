@@ -1,0 +1,54 @@
+.sell-form {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  width: 350px;
+
+  &__caption {
+    font-size: 15px;
+  }
+
+  &__row {
+    display: flex;
+    flex: 1;
+    padding: 10px 0;
+    justify-content: space-between;
+  }
+
+  &__contrast {
+    color: #000;
+  }
+
+  &__price {
+    font-size: 15px;
+  }
+
+  &__total-price {
+    padding: 10px 0;
+  }
+
+  &__hint-text {
+    color: #999;
+    font-size: 13px;
+  }
+
+  &__error {
+    padding: 10px;
+  }
+
+  &__actions {
+    display: flex;
+    margin-top: 10px;
+
+    & button {
+      width: 100%;
+    }
+  }
+
+  &__success {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    justify-self: center;
+  }
+}

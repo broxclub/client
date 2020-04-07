@@ -22,3 +22,11 @@ export function selectSecuritiesVersion(state: IAppReduxState): number {
 export function selectPortfolio(state: IAppReduxState): IPortfolio | null {
   return getFeatureState(state).data.currentPortfolio;
 }
+
+export function selectBuyFormPayload(state: IAppReduxState): NS.IBuySecurityRequestPayload | null {
+  return getFeatureState(state).data.buySecurityForm;
+}
+
+export function selectSellFormPayload(state: IAppReduxState): NS.ISellSecurityRequestPayload | null {
+  return getFeatureState(state).data.sellSecurityForm;
+}

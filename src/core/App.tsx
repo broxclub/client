@@ -11,14 +11,25 @@ import 'decimal.js';
 import 'moment';
 import Api from 'services/Api/Api';
 import { AppContainer } from 'react-hot-loader';
+import { IHooks } from 'classes/StockLib';
+import * as stockContainers from 'features/stock/view/containers';
 
 import './core.scss';
 
 interface IOwnProps {
   api: Api;
+  hooks: IHooks;
+}
+
+export interface IAppHookContext {
+  hooks: IHooks;
 }
 
 type TProps = IOwnProps;
+
+export const AppContext = React.createContext<IAppHookContext>({
+  hooks: {},
+});
 
 class App extends React.PureComponent<TProps> {
   private store: Store<IAppReduxState>;
@@ -55,7 +66,10 @@ class App extends React.PureComponent<TProps> {
     return (
       <AppContainer>
         <Provider store={this.store}>
-          {this.props.children}
+          <AppContext.Provider value={{ hooks: this.props.hooks }}>
+            <stockContainers.Modals/>
+            {this.props.children}
+          </AppContext.Provider>
         </Provider>
       </AppContainer>
     );

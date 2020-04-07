@@ -1,0 +1,122 @@
+@import 'src/shared/view/styles/mixins';
+
+.stock-plate {
+  $p: &;
+
+  @include box-sizing();
+  @include fadeIn();
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border: 1px solid #f5f5f5;
+  padding: 32px;
+  width: 290px;
+
+  &__menu {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: 10px;
+    top: 10px;
+    padding: 5px;
+
+    & path {
+      fill: #999;
+    }
+
+    &:hover {
+      background: #9992;
+    }
+
+    &-content {
+      background-color: #fff;
+      padding: 6px;
+      border: 1px solid #f5f5f5;
+
+      @include fadeIn();
+
+      &-item {
+        cursor: pointer;
+        padding: 3px 10px;
+
+        &:hover {
+          background-color: #9992;
+        }
+      }
+    }
+  }
+
+  &:hover {
+    #{$p}__top-row {
+      &-secname {
+        color: #c71b2c;
+      }
+    }
+  }
+
+  &__top-row {
+    display: flex;
+    justify-content: space-between;
+
+    &-secname {
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-weight: 500;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    &-secid {
+      color: #999;
+      font-size: 13px;
+    }
+
+    & .image-element {
+      width: 48px;
+      height: 48px;
+    }
+
+    & img {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  &__row {
+    padding: 6px 0;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__pl {
+    color: #333;
+
+    &-percent {
+      padding: 0 10px;
+      font-weight: 500;
+      color: #333;
+      font-size: 28px;
+      line-height: 1;
+
+      &_negative {
+        color: #de3716;
+      }
+
+      &_positive {
+        color: #3ede0d;
+      }
+    }
+  }
+
+  &__caption-text {
+    color: #999;
+    font-size: 13px;
+  }
+
+  &__buy-date {
+    display: flex;
+    justify-content: flex-end;
+  }
+}

@@ -8,3 +8,7 @@ export const buyFormEntry = makeReduxFormEntry<NS.IBuyForm>('buy-security', [
 export const filterSecuritiesEntry = makeReduxFormEntry<NS.IFilterSecuritiesForm>('filter-securities', [
   'secid', 'isin', 'secname',
 ]);
+
+export const sellSecurityFormEntry = makeReduxFormEntry<NS.ISellSecurityForm>('sell-security', [
+  'amount'
+]);

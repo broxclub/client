@@ -1,8 +1,19 @@
-import { IHooks, IOwnProps as IStockTableProps } from '../controllers/StockTable';
+import { IOwnProps as IStockTableProps } from '../controllers/StockTable';
 import StockClientWS, { TCallback } from 'services/Api/StockClientWS';
 import { rtrim } from '../util';
 import StockTableInstance from 'classes/StockTableInstance';
 import Api from 'services/Api/Api';
+import PortfolioInstance from 'classes/PortfolioInstance';
+
+/**
+ * High order hooks (component external communication)
+ */
+export interface IHooks {
+  /**
+   * Reload request high order hook
+   */
+  onReloadRequested?(): void;
+}
 
 class StockLib {
   private readonly _baseUrl: string;
@@ -40,6 +51,14 @@ class StockLib {
     hooks: IHooks,
   ) {
     return new StockTableInstance(this, root, columns, portfolioId, hooks);
+  }
+
+  public portfolioInstance(
+    root: HTMLElement,
+    portfolioId: number,
+    hooks: IHooks,
+  ) {
+    return new PortfolioInstance(this, root, portfolioId, hooks);
   }
 
   public async listPortfolios(portfolioId?: number) {

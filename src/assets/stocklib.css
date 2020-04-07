@@ -123,6 +123,8 @@
 .portfolio-table {
     display: inline-flex;
     flex-direction: column;
+    flex: 1;
+    width: 100%;
 }
 
 .portfolio-table-content {

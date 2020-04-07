@@ -7,3 +7,4 @@ export { default as Label, ILabelProps } from './Label/Label';
 export { default as Link } from './Link/Link';
 export { default as Checkbox, ICheckboxProps } from './Checkbox/Checkbox';
 export { default as Modal } from './Modal/Modal';
+export { default as Image } from './Image/Image';

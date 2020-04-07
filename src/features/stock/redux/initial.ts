@@ -12,5 +12,7 @@ export const initial: NS.IReduxState = {
     securities: [],
     securitiesVersion: 0,
     currentPortfolio: null,
+    buySecurityForm: null,
+    sellSecurityForm: null,
   },
 };

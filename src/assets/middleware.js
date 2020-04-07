@@ -97,6 +97,10 @@ const StockLibMiddleware = (() => {
       onReloadRequested: () => controller.refresh(),
     });
 
+    const portfolioInstance = stockClient.portfolioInstance(tabHolder, portfolio.id, {
+      onReloadRequested: () => controller.refresh(),
+    });
+
     const update = () => {
       stockClient.listPortfolioSecurities(portfolio.id).then(securities => {
         const rowsBuffer = new RowsBuffer(columns);
@@ -200,12 +204,27 @@ const StockLibMiddleware = (() => {
             totals.PLPERCENT = totals.PLPERCENT.add(row.PLPERCENT);
           });
 
+          const convertRowsToPlates = (rows) => rows.map(row => ({
+            secid: row.SECID,
+            secname: row.SECNAME,
+            date: row.DATE,
+            quantity: row.QUANTITY,
+            boardid: row.BOARDID,
+            currentprice: row.LCURRENTPRICE,
+            dealprice: row.DEALPRICE,
+            pl: row.PL,
+            plPercent: row.PLPERCENT,
+            totalprice: row.BPRICE
+          }));
+
           // 1: PL
           // 2: BPRICE
           // 3: PLPERCENT_SHOW
 
-          stockTable.render(
-            rowsCollapser(sortedRowsArray),
+          // stockTable.render(
+          portfolioInstance.render(
+            //rowsCollapser(sortedRowsArray),
+            convertRowsToPlates(rowsCollapser(sortedRowsArray)),
             portfolio.name,
             `Свободные средства: ${portfolio.balance}`,
             {

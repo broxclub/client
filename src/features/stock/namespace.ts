@@ -13,6 +13,8 @@ export interface IReduxState {
     securities: ISecuritiy[];
     securitiesVersion: number;
     currentPortfolio: IPortfolio | null;
+    buySecurityForm: IBuySecurityRequestPayload | null;
+    sellSecurityForm: ISellSecurityRequestPayload | null;
   }
 }
 
@@ -60,6 +62,38 @@ export interface IBuySecurityPayload {
   portfolioId: number;
 }
 
+export interface IBuySecurityRequestPayload {
+  portfolioId: number;
+}
+
+export interface ISellSecurityRequestPayload {
+  portfolioId: number;
+  secid: string;
+  secname: string;
+  boardid: string;
+  available: number;
+  price: number;
+}
+
+export interface ISecurityPlate {
+  secid: string;
+  secname: string;
+  date: string;
+  quantity: number;
+  boardid: string;
+  currentprice: number;
+  dealprice: string;
+  pl: string;
+  plPercent: string;
+  totalprice: string;
+}
+
+export type TTotals = { [key: string]: string };
+
+export interface ISellSecurityForm {
+  amount: number;
+}
+
 export type ILoadSecurities = IAction<'STOCK:LOAD_SECURITIES', ILoadSecuritiesPayload>;
 export type ILoadSecuritiesSuccess = IAction<'STOCK:LOAD_SECURITIES_SUCCESS', ISecuritiy[]>;
 export type ILoadSecuritiesFailed = IPlainFailAction<'STOCK:LOAD_SECURITIES_FAILED'>;
@@ -76,6 +110,11 @@ export type ILoadPortfolio = IAction<'STOCK:LOAD_PORTFOLIO', number>;
 export type ILoadPortfolioSuccess = IAction<'STOCK:LOAD_PORTFOLIO_SUCCESS', IPortfolio>;
 export type ILoadPortfolioFailed = IPlainFailAction<'STOCK:LOAD_PORTFOLIO_FAILED'>;
 
+export type IBuySecurityCallRequest = IAction<'STOCK:BUY_SECURITY_REQUEST', IBuySecurityRequestPayload>;
+export type IResetBuySecurityCallRequest = IPlainAction<'STOCK:RESET_BUY_SECURITY_REQUEST'>;
+export type ISellSecurityCallRequest = IAction<'STOCK:SELL_SECURITY_REQUEST', ISellSecurityRequestPayload>;
+export type IResetSellSecurityCallRequest = IPlainAction<'STOCK:RESET_SELL_SECURITY_REQUEST'>;
+
 export type IReset = IPlainAction<'STOCK:RESET'>;
 
 export type Action =
@@ -91,4 +130,8 @@ export type Action =
   | ILoadPortfolio
   | ILoadPortfolioSuccess
   | ILoadPortfolioFailed
+  | IBuySecurityCallRequest
+  | IResetBuySecurityCallRequest
+  | ISellSecurityCallRequest
+  | IResetSellSecurityCallRequest
   | IReset;

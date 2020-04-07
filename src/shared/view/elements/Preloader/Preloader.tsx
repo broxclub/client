@@ -10,6 +10,7 @@ interface IProps {
   caption?: string;
   type?: 'button' | 'default';
   size?: number;
+  noSize?: boolean;
   position?: 'absolute' | 'relative' | 'fixed';
   className?: string;
   children?: React.ReactNode;
@@ -31,6 +32,7 @@ function Preloader({
   position = 'absolute',
   className = '',
   caption,
+  noSize,
 }: IProps) {
   if (!isShow) {
     return children || null;
@@ -39,7 +41,7 @@ function Preloader({
   const image = preloaderImg[type];
   return (
     <div className={b({ position }).mix(className)}>
-      <Icon src={image} style={{ width: `${size}rem`, height: `${size}rem` }} />
+      <Icon src={image} style={noSize ? {} : { width: `${size}rem`, height: `${size}rem` }} />
       {/*<div className={b('loader')}>
         <div className={b('loader-one').mix(b('inner'))}/>
         <div className={b('loader-two').mix(b('inner'))}/>

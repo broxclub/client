@@ -9,3 +9,9 @@ export function checkRequired(data: {[key: string]: any}) {
     }
   });
 }
+
+export function numSubClass(val: number) {
+  if (val > 0) return 'positive';
+  if (val < 0) return 'negative';
+  return 'zero';
+}

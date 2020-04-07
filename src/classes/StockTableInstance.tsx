@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { IOwnProps as IStockTableProps, default as StockTable, IHooks } from 'controllers/StockTable';
+import { IOwnProps as IStockTableProps, default as StockTable } from 'controllers/StockTable';
 import App from 'core/App';
-import StockLib from 'classes/StockLib';
+import StockLib, { IHooks } from 'classes/StockLib';
 
 class StockTableInstance {
   private readonly lib: StockLib;
@@ -39,6 +39,7 @@ class StockTableInstance {
     return ReactDOM.render(
       <App
         api={this.lib.api}
+        hooks={this.hooks}
       >
         <StockTable
           columns={this.columns}

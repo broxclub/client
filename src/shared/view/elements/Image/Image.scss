@@ -1,0 +1,9 @@
+.image-element {
+  &__error-image {
+    width: 40px;
+
+    & path {
+      fill: #fff5;
+    }
+  }
+}

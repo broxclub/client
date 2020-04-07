@@ -3,18 +3,8 @@ import block from 'bem-cn';
 import { IRow, TColumnsDefinition } from '../types/stock';
 import { bind } from 'decko';
 import { BuyForm } from 'features/stock/view/containers';
-
-/**
- * High order hooks (component external communication)
- */
-export interface IHooks {
-  /**
-   * Reload request high order hook
-   */
-  onReloadRequested?(): void;
-}
-
-type TTotals = { [key: string]: string };
+import { IHooks } from 'classes/StockLib';
+import { TTotals } from 'features/stock/namespace';
 
 export interface IOwnProps {
   caption?: string;
@@ -79,6 +69,9 @@ class StockTable extends React.PureComponent<TProps, IState> {
 
   @bind
   private renderActions() {
+    if (['api.brox.club', 'test.brox.club', 'localhost'].indexOf(document.domain) < 0) {
+      return null;
+    }
     return (
       <div className={b('actions')}>
         <button onClick={this.handleBuy}>Купить</button>
