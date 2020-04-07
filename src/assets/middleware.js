@@ -221,9 +221,25 @@ const StockLibMiddleware = (() => {
           // 2: BPRICE
           // 3: PLPERCENT_SHOW
 
-          // stockTable.render(
+          stockTable.render(
+            rowsCollapser(sortedRowsArray),
+            portfolio.name,
+            `Свободные средства: ${portfolio.balance}`,
+            {
+              PL: totals.PL.toString(),
+              BPRICE: totals.BPRICE.toString(),
+              PLPERCENT_SHOW:
+                totals.BPRICE
+                  .add(portfolio.balance)
+                  .mul(100)
+                  .div(portfolio.start_balance)
+                  .minus(100)
+                  .toFixed(2)
+            }
+          );
+
+          if (false)
           portfolioInstance.render(
-            //rowsCollapser(sortedRowsArray),
             convertRowsToPlates(rowsCollapser(sortedRowsArray)),
             portfolio.name,
             `Свободные средства: ${portfolio.balance}`,

@@ -5,6 +5,7 @@ import { ISecurityPlate } from '../../../namespace';
 import Decimal from 'decimal.js';
 import { Menu } from 'shared/view/components';
 import { Icon, Image } from 'shared/view/elements';
+import config from 'config/config';
 
 import './StockPlate.scss';
 
@@ -30,6 +31,7 @@ class StockPlate extends React.PureComponent<TProps, IState> {
     const { security } = this.props;
     const { menuIsOpen } = this.state;
     const plPercent = parseInt(new Decimal(security.plPercent).toFixed(0));
+
     return (
       <div className={b()}>
         <div className={b('menu')}>
@@ -40,7 +42,7 @@ class StockPlate extends React.PureComponent<TProps, IState> {
             onOutsideClicked={this.handleMenuOutsideClicked}
           >
             <div className={b('menu-content')}>
-              <div className={b('menu-content-item')} onClick={this.handleSellActionClicked}>Продать</div>
+              <div className={b('menu-content-item', { disabled: !config.isTradeEnabled })} onClick={this.handleSellActionClicked}>Продать</div>
             </div>
           </Menu>
         </div>
@@ -101,7 +103,9 @@ class StockPlate extends React.PureComponent<TProps, IState> {
   @bind
   private handleSellActionClicked() {
     this.setState({ menuIsOpen: false }, () => {
-      this.props.onSellClicked(this.props.security);
+      if (config.isTradeEnabled) {
+        this.props.onSellClicked(this.props.security);
+      }
     });
   }
 

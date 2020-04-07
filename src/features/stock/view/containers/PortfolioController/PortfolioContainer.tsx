@@ -11,6 +11,7 @@ import * as actions from '../../../redux/actions';
 import { numSubClass } from '../../../../../util';
 import { Menu } from 'shared/view/components';
 import { Icon } from 'shared/view/elements';
+import config from 'config/config';
 
 import './PortfolioContainer.scss';
 
@@ -68,7 +69,7 @@ class PortfolioContainer extends React.PureComponent<TProps, IState> {
               onOutsideClicked={this.handleMenuOutsideClicked}
             >
               <div className={b('menu-content')}>
-                <div className={b('menu-content-item')} onClick={this.handleBuyActionClicked}>Купить ценные бумаги</div>
+                <div className={b('menu-content-item', {disabled: !config.isTradeEnabled})} onClick={this.handleBuyActionClicked}>Купить ценные бумаги</div>
               </div>
             </Menu>
           </div>
@@ -115,9 +116,11 @@ class PortfolioContainer extends React.PureComponent<TProps, IState> {
   @bind
   private handleBuyActionClicked() {
     this.setState({ menuIsOpen: false }, () => {
-      this.props.buySecurityRequest({
-        portfolioId: this.props.portfolioId,
-      });
+      if (config.isTradeEnabled) {
+        this.props.buySecurityRequest({
+          portfolioId: this.props.portfolioId,
+        });
+      }
     });
   }
 
