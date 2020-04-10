@@ -1,0 +1,9 @@
+.plates-weighed {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+
+  & .stock-plate {
+    margin: 10px;
+  }
+}

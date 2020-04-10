@@ -71,7 +71,7 @@ class StockPlate extends React.PureComponent<TProps, IState> {
           </div>
         </div>
 
-        <div className={b('row')}>
+        {/*<div className={b('row')}>
           <div className={b('dealprice')}>
             <div>{security.dealprice} ₽ <span className={b('caption-text')}>за 1 шт.</span></div>
             <div className={b('caption-text')}>Цена сделки</div>
@@ -87,7 +87,7 @@ class StockPlate extends React.PureComponent<TProps, IState> {
             <div>{security.currentprice} ₽</div>
             <div className={b('caption-text')}>Текущая цена</div>
           </div>
-        </div>
+        </div>*/}
 
         <div className={b('row')}>
           <div>

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 
 import { IPortfolio, ISecurityPlate/*, TTotals*/ } from '../../../namespace';
-import { StockPlate } from '../../components';
+import { PlatesWeighed,/*, StockPlate*/ } from '../../components';
 // import { IHooks } from 'classes/StockLib';
 import * as actions from '../../../redux/actions';
 import * as selectors from '../../../redux/selectors';
@@ -170,9 +170,7 @@ class PortfolioContainer extends React.PureComponent<TProps, IState> {
   private renderPlates(plates: ISecurityPlate[]) {
     return (
       <div className={b('content')}>
-        {plates!.map((plate, index) => (
-          <StockPlate key={`plate${index}`} security={plate} onSellClicked={this.handleSellClicked} />
-        ))}
+        <PlatesWeighed plates={plates} onSellClicked={this.handleSellClicked}/>
       </div>
     );
   }
