@@ -6,7 +6,8 @@
     "dev": "better-npm-run watch:dev",
     "build:dev": "better-npm-run build:dev",
     "prod": "better-npm-run prod",
-    "build:prod": "better-npm-run build:prod"
+    "build:prod": "better-npm-run build:prod",
+    "build:staging": "better-npm-run build:staging"
   },
   "betterScripts": {
     "watch:dev": {
@@ -36,6 +37,14 @@
       "command": "\"node_modules/.bin/webpack\" --colors --config \"webpack/prod.config.ts\"",
       "env": {
         "NODE_ENV": "production",
+        "TS_NODE_COMPILER_OPTIONS": "{\"target\": \"es5\", \"module\": \"commonjs\"}"
+      }
+    },
+    "build:staging": {
+      "command": "\"node_modules/.bin/webpack\" --colors --config \"webpack/prod.config.ts\"",
+      "env": {
+        "NODE_ENV": "production",
+        "CONTOUR": "staging",
         "TS_NODE_COMPILER_OPTIONS": "{\"target\": \"es5\", \"module\": \"commonjs\"}"
       }
     }

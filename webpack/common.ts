@@ -13,16 +13,11 @@ import postcssSCSS from 'postcss-scss';
 import autoprefixer from 'autoprefixer';
 import stylelint from 'stylelint';
 import doiuse from 'doiuse';
-import { ICustomConfig } from 'config/types/config';
+import { IContourConfig, ICustomConfig, TContour, TContours } from 'config/types/config';
 import { rtrim } from '../src/util';
 
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 // const DynamicCdnWebpackPlugin = require('dynamic-cdn-webpack-plugin');
-
-const isProduction = process.env.NODE_ENV === 'production';
-export const chunkName = isProduction ? 'id' : 'name';
-export const chunkHash = process.env.WATCH_MODE ? 'hash' : 'chunkhash';
-export const hot = !!process.env.WATCH_MODE;
 
 export let customConfig: ICustomConfig = {};
 export const contourConfigFilePath = `${__dirname}/../.config.json`;
@@ -34,8 +29,33 @@ try {
   console.info(`Config [${contourConfigFilePath}] load failed with error:\n`, e.message);
 }
 
+const contours: TContours = customConfig.contours || {
+  production: {
+    buildMode: 'production',
+    publicPath: 'https://api.brox.club/client/',
+  },
+  staging: {
+    buildMode: 'production',
+    publicPath: 'https://api.brox.club/client/',
+  },
+  dev: {
+    buildMode: 'dev',
+    publicPath: './',
+  },
+};
+
+const contourConfig: IContourConfig =
+  contours[process.env.CONTOUR as TContour] ||
+  contours[process.env.NODE_ENV as TContour] ||
+  contours.production;
+
+const isProduction = contourConfig.buildMode === 'production';
+export const chunkName = isProduction ? 'id' : 'name';
+export const chunkHash = process.env.WATCH_MODE ? 'hash' : 'chunkhash';
+export const hot = !!process.env.WATCH_MODE;
+
 const moduleExt = `${process.env.NODE_ENV}${isProduction ? '.min' : ''}`;
-export const publicPath = isProduction ? 'https://api.brox.club/client/' : './';
+export const publicPath = contourConfig.publicPath;
 
 export const commonPlugins: webpack.Plugin[] = [
   new CleanWebpackPlugin(['build'], { root: path.resolve(__dirname, '..') }),
