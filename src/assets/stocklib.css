@@ -1,2 +1,14 @@
+#portfolios {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .portfolio {
+    max-width: 1310px;
+}
+
+.portfolio-table {
+    max-width: 1310px;
 }
