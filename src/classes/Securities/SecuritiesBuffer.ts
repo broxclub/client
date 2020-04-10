@@ -33,7 +33,7 @@ class SecuritiesBuffer {
       const id = this.rowsBuffer.getKey(row);
       const { YIELD } = row;
       const rowsArray = this.rowsBuffer.get(id);
-      const LCURRENTPRICE = row.LCURRENTPRICE || row.WAPRICE || 0;
+      const LCURRENTPRICE = row.LCURRENTPRICE || row.WAPRICE || row.PREVPRICE || row.PREVWAPRICE || 0;
 
       if (!rowsArray) {
         continue;
