@@ -40,7 +40,7 @@
       if (portfolioID) {
         if (portfolios) {
           const portfolioTable = document.createElement('div');
-          portfolioTable.className = 'portfolio-table';
+          portfolioTable.className = 'portfolio';
           container.appendChild(portfolioTable);
           control.renderPortfolioToDom(portfolioID, portfolioTable);
         }
@@ -48,7 +48,7 @@
         // RENDER ALL PORTFOLIOS TO SINGLE PLACE
         Object.values(portfolios).forEach(portfolio => {
           const portfolioTable = document.createElement('div');
-          portfolioTable.className = 'portfolio-table';
+          portfolioTable.className = 'portfolio';
           container.appendChild(portfolioTable);
 
           control.renderPortfolioToDom(portfolio.id, portfolioTable);

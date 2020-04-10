@@ -2,6 +2,8 @@ const STOCKS = 'stocks';
 
 export type TCallback = (props: object) => void;
 
+export type TMarketsSubscription = { [key in string]: string[] };
+
 class StockClientWS {
   private commandId: number = 0;
   protected wsUrl: string = '';
@@ -24,7 +26,7 @@ class StockClientWS {
     }
   }
 
-  public subscribeMarkets(markets: string[], callback: TCallback) {
+  public subscribeMarkets(markets: TMarketsSubscription, callback: TCallback) {
     const invocationId = this.sendMessage(STOCKS, markets);
     if (invocationId) {
       this.channels.set(invocationId, callback);

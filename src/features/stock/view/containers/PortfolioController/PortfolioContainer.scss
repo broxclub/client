@@ -4,15 +4,37 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  width: 100%;
+  position: relative;
+
+  @include box-sizing();
+
+  & * {
+    @include box-sizing();
+  }
+
+  &__table {
+    display: flex;
+    position: relative;
+  }
 
   &__menu {
     position: absolute;
+    display: flex;
     width: 20px;
     height: 20px;
     right: 10px;
     top: 10px;
     padding: 5px;
+
+    & .menu {
+      display: flex;
+      position: relative;
+
+      &__button {
+        display: flex;
+        flex: 1;
+      }
+    }
 
     & path {
       fill: #999;

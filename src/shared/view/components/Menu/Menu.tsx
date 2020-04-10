@@ -27,7 +27,7 @@ class Menu extends React.PureComponent<TProps> {
         <div className={b()}>
           <Reference>
             {({ ref }) => (
-              <div onClick={this.handleMenuBtnClicked} ref={ref}>
+              <div className={b('button')} onClick={this.handleMenuBtnClicked} ref={ref}>
                 {btn}
               </div>
             )}

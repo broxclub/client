@@ -219,7 +219,7 @@ class SellForm extends React.PureComponent<TProps, IState> {
     const { price } = this.props.sellFormPayload;
     const value = +e.target.value;
     if (!isNaN(value) && value > 0) {
-      this.setState({ totalPrice: new Decimal(price).mul(value).toNumber() });
+      this.setState({ totalPrice: new Decimal(price || 0).mul(value).toNumber() });
     } else {
       this.setState({ totalPrice: 0 });
     }
@@ -227,7 +227,6 @@ class SellForm extends React.PureComponent<TProps, IState> {
 
   @bind
   private handleClose() {
-    this.props.reset();
     this.props.onClose();
   }
 }

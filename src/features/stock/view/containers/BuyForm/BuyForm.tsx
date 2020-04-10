@@ -259,7 +259,6 @@ class BuyForm extends React.PureComponent<TProps, IState> {
 
   @bind
   private handleClose() {
-    this.props.reset();
     this.props.onClose();
   }
 }

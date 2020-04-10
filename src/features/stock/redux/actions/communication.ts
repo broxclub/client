@@ -56,3 +56,31 @@ export const {
   'STOCK:LOAD_PORTFOLIO_SUCCESS',
   'STOCK:LOAD_PORTFOLIO_FAILED'
 );
+
+export const {
+  execute: listPortfolioSecurities,
+  completed: listPortfolioSecuritiesSuccess,
+  failed: listPortfolioSecuritiesFailed
+} = makeCommunicationActionCreators<
+  NS.IListPortfolioSecurities,
+  NS.IListPortfolioSecuritiesSuccess,
+  NS.IListPortfolioSecuritiesFailed
+  >(
+    'STOCK:LIST_PORTFOLIO_SECURITIES',
+  'STOCK:LIST_PORTFOLIO_SECURITIES',
+  'STOCK:LIST_PORTFOLIO_SECURITIES'
+);
+
+export const {
+  execute: loadPortfolioWithSecurities,
+  completed: loadPortfolioWithSecuritiesSuccess,
+  failed: loadPortfolioWithSecuritiesFailed
+} = makeCommunicationActionCreators<
+  NS.ILoadPortfolioWithSecurities,
+  NS.ILoadPortfolioWithSecuritiesSuccess,
+  NS.ILoadPortfolioWithSecuritiesFailed
+  >(
+  'STOCK:LOAD_PORTFOLIO_WITH_SECURITIES',
+  'STOCK:LOAD_PORTFOLIO_WITH_SECURITIES_SUCCESS',
+  'STOCK:LOAD_PORTFOLIO_WITH_SECURITIES_FAILED',
+);

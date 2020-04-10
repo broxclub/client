@@ -7,6 +7,8 @@ export const initial: NS.IReduxState = {
     sellSecurity: initialCommunicationField,
     buySecurity: initialCommunicationField,
     loadPortfolio: initialCommunicationField,
+    listPortfolioSecurities: initialCommunicationField,
+    loadPortfolioWithSecurities: initialCommunicationField,
   },
   data: {
     securities: [],
@@ -14,5 +16,9 @@ export const initial: NS.IReduxState = {
     currentPortfolio: null,
     buySecurityForm: null,
     sellSecurityForm: null,
+    portfolioSecurities: null,
+    plates: null,
+    totals: null,
+    rows: [],
   },
 };

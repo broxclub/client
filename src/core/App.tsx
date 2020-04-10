@@ -13,11 +13,14 @@ import Api from 'services/Api/Api';
 import { AppContainer } from 'react-hot-loader';
 import { IHooks } from 'classes/StockLib';
 import * as stockContainers from 'features/stock/view/containers';
+import StockClientWS from 'services/Api/StockClientWS';
+import SecuritiesStore from 'features/stock/SecuritiesStore';
 
 import './core.scss';
 
 interface IOwnProps {
   api: Api;
+  socket: StockClientWS;
   hooks: IHooks;
 }
 
@@ -37,10 +40,12 @@ class App extends React.PureComponent<TProps> {
 
   constructor(props: TProps) {
     super(props);
-    const { api } = props;
+    const { api, socket } = props;
 
     const deps: IDependencies = {
       api,
+      socket,
+      securitiesStore: new SecuritiesStore(),
     };
 
     const sagaMiddleware = createSagaMiddleware();

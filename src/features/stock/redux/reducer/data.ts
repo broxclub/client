@@ -34,6 +34,19 @@ export default function dataReducer(state: NS.IReduxState['data'] = initial.data
         ...state,
         sellSecurityForm: null,
       };
+    case 'STOCK:LOAD_PORTFOLIO_WITH_SECURITIES_SUCCESS':
+      return {
+        ...state,
+        currentPortfolio: action.payload.portfolio,
+        portfolioSecurities: action.payload.securities,
+      };
+    case 'STOCK:UPDATE_SUBSCRIBED_SECURITIES':
+      return {
+        ...state,
+        totals: action.payload.totals,
+        plates: action.payload.plates,
+        rows: action.payload.rows,
+      };
   }
 
   return state;

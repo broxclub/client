@@ -2,7 +2,7 @@ import BaseApi from 'services/Api/Base';
 import { bind } from 'decko';
 import { ISecuritiy } from 'features/stock/namespace';
 import { IBuySecurityRequest, IListSecuritiesRequest, ISellSecurityRequest } from 'shared/types/requests';
-import { IFieldsResponse, IPortfolioResponse } from 'shared/types/responses';
+import { IFieldsResponse, IPortfolioResponse, IPortfolioSecurity } from 'shared/types/responses';
 
 class StockApi extends BaseApi {
   @bind
@@ -30,8 +30,8 @@ class StockApi extends BaseApi {
   }
 
   @bind
-  public async listPortfolioSecurities(portfolioId: number): Promise<any> {
-    const response = await this.actions.get<any>(`/store/securities/${portfolioId}`);
+  public async listPortfolioSecurities(portfolioId: number): Promise<IPortfolioSecurity[]> {
+    const response = await this.actions.get<IPortfolioSecurity[]>(`/store/securities/${portfolioId}`);
     return response.data;
   }
 

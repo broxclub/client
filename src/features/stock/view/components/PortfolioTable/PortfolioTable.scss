@@ -1,0 +1,107 @@
+@import 'src/shared/view/styles/mixins';
+
+.portfolio-table {
+  display: flex;
+  font-size: 12px;
+  flex: 1;
+  width: 100%;
+  justify-content: center;
+
+  &__head {
+    background-color: #fff;
+
+    &-cell {
+      display: flex;
+      white-space: normal;
+      word-break: break-word;
+      overflow: hidden;
+      padding: 10px;
+      justify-content: center;
+    }
+  }
+
+  &__body {
+    &-row {
+      background-color: #fff;
+
+      &:nth-child(even) {
+        background-color: #fffb;
+      }
+
+      &:hover {
+        background-color: #feee;
+      }
+
+      &-cell {
+        display: flex;
+        position: relative;
+        align-content: center;
+        align-items: center;
+        padding: 10px;
+      }
+    }
+  }
+
+  &__cell {
+    display: flex;
+    flex: 1;
+
+    &_number {
+      text-align: right;
+      justify-content: flex-end;
+    }
+
+    &_negative {
+      color: #de3716;
+    }
+
+    &_positive {
+      color: #3ede0d;
+    }
+  }
+
+  &__ico {
+    & .image-element {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  &__menu {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: 10px;
+    top: 10px;
+    padding: 5px;
+
+    & path {
+      fill: #999;
+    }
+
+    &:hover {
+      background: #9992;
+    }
+
+    &-content {
+      background-color: #fff;
+      padding: 6px;
+      border: 1px solid #f5f5f5;
+
+      @include fadeIn();
+
+      &-item {
+        cursor: pointer;
+        padding: 3px 10px;
+
+        &:hover {
+          background-color: #9992;
+        }
+
+        &_disabled {
+          color: #eee;
+        }
+      }
+    }
+  }
+}

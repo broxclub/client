@@ -39,6 +39,7 @@ class StockTableInstance {
     return ReactDOM.render(
       <App
         api={this.lib.api}
+        socket={this.lib.socket}
         hooks={this.hooks}
       >
         <StockTable

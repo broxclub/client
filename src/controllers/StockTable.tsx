@@ -5,6 +5,7 @@ import { bind } from 'decko';
 import { BuyForm } from 'features/stock/view/containers';
 import { IHooks } from 'classes/StockLib';
 import { TTotals } from 'features/stock/namespace';
+import config from 'config/config';
 
 export interface IOwnProps {
   caption?: string;
@@ -69,9 +70,10 @@ class StockTable extends React.PureComponent<TProps, IState> {
 
   @bind
   private renderActions() {
-    if (['api.brox.club', 'test.brox.club', 'localhost'].indexOf(document.domain) < 0) {
+    if (!config.isTradeEnabled) {
       return null;
     }
+
     return (
       <div className={b('actions')}>
         <button onClick={this.handleBuy}>Купить</button>
