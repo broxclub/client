@@ -67,7 +67,7 @@ class StockPlate extends React.PureComponent<TProps, IState> {
                 {plPercent}%
               </span>
             </div>
-            <div className={b('caption-text')}>Рост за последний год</div>
+            {/*<div className={b('caption-text')}>Рост за последний год</div>*/}
           </div>
         </div>
 
@@ -89,12 +89,12 @@ class StockPlate extends React.PureComponent<TProps, IState> {
           </div>
         </div>*/}
 
-        <div className={b('row')}>
+        {/*<div className={b('row')}>
           <div>
             <div>{security.totalprice} ₽</div>
             <div className={b('caption-text')}>Цена бумаг в портфеле</div>
           </div>
-        </div>
+        </div>*/}
 
       </div>
     );
