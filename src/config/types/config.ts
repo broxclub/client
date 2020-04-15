@@ -1,5 +1,5 @@
-export type TContour = 'production' | 'staging' | 'dev';
-export type TBuildMode = 'production' | 'dev';
+export type TContour = 'production' | 'staging' | 'development';
+export type TBuildMode = 'production' | 'development';
 
 export interface IContourConfig {
   buildMode: TBuildMode;

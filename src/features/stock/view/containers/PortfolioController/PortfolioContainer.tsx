@@ -136,7 +136,7 @@ class PortfolioContainer extends React.PureComponent<TProps, IState> {
       <div className={b('totals')}>
         <div>
           <div>
-            <span className={b('pl', { [numSubClass(+totals.PLPERCENT_SHOW)]: true })}>{totals.PL} ₽</span>
+            <span className={b('pl', { [numSubClass(+totals.PL)]: true })}>{totals.PL} ₽</span>
             <span className={b('pl-percent', { [numSubClass(+totals.PLPERCENT_SHOW)]: true })}>
                   {totals.PLPERCENT_SHOW} %
                 </span>

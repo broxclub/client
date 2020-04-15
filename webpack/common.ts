@@ -38,8 +38,8 @@ const contours: TContours = customConfig.contours || {
     buildMode: 'production',
     publicPath: 'https://api.brox.club/client/',
   },
-  dev: {
-    buildMode: 'dev',
+  development: {
+    buildMode: 'development',
     publicPath: './',
   },
 };
@@ -69,7 +69,7 @@ export const commonPlugins: webpack.Plugin[] = [
     chunksSortMode: sortChunks,
     templateParameters: (compilation: any, assets: any, options: any) => {
       const { publicPath: assetPublicPath, chunks, js: originalJS, css, manifest } = assets;
-      console.log('css: ', css);
+
       let externalJS = [ ...originalJS ];
       const headJS: string[] = [];
       const bodyJS: string[] = [];
