@@ -42,6 +42,7 @@ export interface ISecuritiy {
   BOARDID: string;
   ISIN: string;
   LCURRENTPRICE: number;
+  WAPRICE: number;
   SECNAME: string;
 }
 

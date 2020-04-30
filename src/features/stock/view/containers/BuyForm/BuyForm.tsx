@@ -94,7 +94,7 @@ class BuyForm extends React.PureComponent<TProps, IState> {
     this.activeFilter = new ActiveFilter<ISecuritiy>(securities);
     this.setState({ filteredSecurities: securities });
     this.props.loadSecurities({
-      fields: ['BOARDID', 'SECID', 'ISIN', 'SECNAME', 'LCURRENTPRICE'],
+      fields: ['BOARDID', 'SECID', 'ISIN', 'SECNAME', 'LCURRENTPRICE', 'WAPRICE'],
       filter: '',
     });
   }
@@ -196,7 +196,12 @@ class BuyForm extends React.PureComponent<TProps, IState> {
 
   private get activeSecurities() {
     const { securities } = this.props;
-    return securities.filter(sec => sec.LCURRENTPRICE > 0);
+    return securities
+      .filter(sec => sec.LCURRENTPRICE > 0 || sec.WAPRICE > 0)
+      .map(sec => ({
+        ...sec,
+        LCURRENTPRICE: sec.LCURRENTPRICE || sec.WAPRICE,
+      }));
   }
 
   @bind
